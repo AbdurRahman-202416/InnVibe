@@ -8,6 +8,8 @@ interface ModalProps {
   /** Panel width on larger screens. Default is a compact dialog. */
   size?: 'md' | 'lg';
   children: ReactNode;
+  /** Optional fixed bar at the bottom (actions). It stays visible while the content scrolls. */
+  footer?: ReactNode;
   /** Omit to make the modal impossible to dismiss (e.g. while a payment is processing). */
   onClose?: () => void;
 }
@@ -17,12 +19,14 @@ interface ModalProps {
  *  - role="dialog" + aria-modal + aria-labelledby for screen readers
  *  - Escape key and backdrop click close it (when onClose is given)
  *  - page scroll is locked while it is open, and focus returns to the button that opened it
+ *  - fixed header (title + close), scrolling body and an optional fixed footer, so long content never pushes
+ *    the close button or the actions out of view
  *  - bottom sheet on phones, centred card on larger screens
  *  - rendered into document.body (a portal), so it always sits above sticky headers and
  *    sticky sidebars. Without this, a modal inside a sticky parent is trapped in that parent's stacking context.
  *    (A Modal is only ever mounted after a click, so `document` exists.)
  */
-export default function Modal({ title, children, onClose, size = 'md' }: ModalProps) {
+export default function Modal({ title, children, footer, onClose, size = 'md' }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -57,9 +61,9 @@ export default function Modal({ title, children, onClose, size = 'md' }: ModalPr
         aria-labelledby={titleId}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        className={`animate-modal-in max-h-[90vh] w-full overflow-y-auto border border-line bg-surface p-6 shadow-2xl outline-none ${size === 'lg' ? 'sm:max-w-xl' : 'sm:max-w-md'} sm:p-8 rounded-t-lg sm:rounded-lg`}
+        className={`animate-modal-in flex max-h-[90dvh] w-full flex-col overflow-hidden border border-line bg-surface shadow-2xl outline-none ${size === 'lg' ? 'sm:max-w-xl' : 'sm:max-w-md'} rounded-t-lg sm:rounded-lg`}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 px-6 pb-4 pt-6 sm:px-8 sm:pt-7">
           <h2 id={titleId} className="font-display text-2xl font-semibold text-ink">
             {title}
           </h2>
@@ -76,7 +80,8 @@ export default function Modal({ title, children, onClose, size = 'md' }: ModalPr
             </button>
           )}
         </div>
-        <div className="mt-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 sm:px-8 sm:pb-7">{children}</div>
+        {footer && <div className="shrink-0 border-t border-line bg-surface px-6 py-4 sm:px-8">{footer}</div>}
       </div>
     </div>,
     document.body,

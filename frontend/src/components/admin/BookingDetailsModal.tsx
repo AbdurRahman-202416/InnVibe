@@ -70,8 +70,32 @@ export default function BookingDetailsModal({ booking, room, onClose, onCancelle
   // ---- Step 2: cancel with a reason ----
   if (step === 'cancel') {
     return (
-      <Modal title="Cancel this booking?" size="lg" onClose={isSubmitting ? undefined : onClose}>
-        <form onSubmit={handleCancel} noValidate>
+      <Modal
+        title="Cancel this booking?"
+        size="lg"
+        onClose={isSubmitting ? undefined : onClose}
+        footer={
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setStep('details')}
+              disabled={isSubmitting}
+              className="min-h-11 cursor-pointer px-5 text-sm font-semibold text-muted transition-colors duration-200 hover:bg-paper hover:text-ink disabled:opacity-60 rounded-md"
+            >
+              Keep booking
+            </button>
+            <button
+              type="submit"
+              form="cancel-booking-form"
+              disabled={isSubmitting}
+              className="min-h-11 cursor-pointer bg-danger px-6 text-sm font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-[#8f1b12] disabled:cursor-wait disabled:opacity-60 rounded-md"
+            >
+              {isSubmitting ? 'Cancelling…' : 'Cancel booking'}
+            </button>
+          </div>
+        }
+      >
+        <form id="cancel-booking-form" onSubmit={handleCancel} noValidate>
           <div className="border border-line bg-paper p-4 text-sm rounded-md">
             <p className="font-semibold text-ink">
               {booking.guestName} · <span className="tabular-nums">{booking.code}</span>
@@ -142,24 +166,6 @@ export default function BookingDetailsModal({ booking, room, onClose, onCancelle
               {errorMessage}
             </p>
           )}
-
-          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => setStep('details')}
-              disabled={isSubmitting}
-              className="min-h-11 cursor-pointer px-5 text-sm font-semibold text-muted transition-colors duration-200 hover:bg-paper hover:text-ink disabled:opacity-60 rounded-md"
-            >
-              Keep booking
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="min-h-11 cursor-pointer bg-danger px-6 text-sm font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-[#8f1b12] disabled:cursor-wait disabled:opacity-60 rounded-md"
-            >
-              {isSubmitting ? 'Cancelling…' : 'Cancel booking'}
-            </button>
-          </div>
         </form>
       </Modal>
     );
@@ -167,7 +173,33 @@ export default function BookingDetailsModal({ booking, room, onClose, onCancelle
 
   // ---- Step 1: details ----
   return (
-    <Modal title="Booking details" size="lg" onClose={onClose}>
+    <Modal
+      title="Booking details"
+      size="lg"
+      onClose={onClose}
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {canCancel ? (
+            <button
+              type="button"
+              onClick={() => setStep('cancel')}
+              className="min-h-11 cursor-pointer border border-danger/40 px-5 text-sm font-semibold text-danger transition-colors duration-200 hover:bg-danger/5 rounded-md"
+            >
+              Cancel this booking…
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-11 cursor-pointer bg-navy px-6 text-sm font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-navy-hover rounded-md"
+          >
+            Close
+          </button>
+        </div>
+      }
+    >
       <div className="flex flex-wrap items-center justify-between gap-3 border border-gold/40 bg-gold-soft px-4 py-3 rounded-md">
         <p className="text-xl font-bold tabular-nums tracking-widest text-gold-ink">{booking.code}</p>
         <StayBadge status={bookingStatus(booking)} />
@@ -239,18 +271,6 @@ export default function BookingDetailsModal({ booking, room, onClose, onCancelle
           {formatCurrency(booking.totalAmount)}
         </span>
       </div>
-
-      {canCancel && (
-        <div className="mt-6 border-t border-line pt-5">
-          <button
-            type="button"
-            onClick={() => setStep('cancel')}
-            className="min-h-11 cursor-pointer border border-danger/40 px-5 text-sm font-semibold text-danger transition-colors duration-200 hover:bg-danger/5 rounded-md"
-          >
-            Cancel this booking…
-          </button>
-        </div>
-      )}
     </Modal>
   );
 }
