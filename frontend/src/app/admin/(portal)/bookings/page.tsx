@@ -113,8 +113,11 @@ export default function BookingsPage() {
   const roomFor = (booking: Booking) => rooms.find((room) => room.roomNumber === booking.roomNumber);
 
   return (
-    <>
+    // From the lg breakpoint the page fills the screen: header and search stay put and only the list scrolls
+    // (100dvh minus the 3rem top and bottom padding of the portal layout). Below lg the whole page scrolls as usual.
+    <div className="lg:flex lg:h-[calc(100dvh-6rem)] lg:flex-col">
       <PageHeader
+        compact
         title="Bookings"
         subtitle="Every reservation, from the website and the front desk. Latest arrivals first."
         action={
@@ -130,11 +133,11 @@ export default function BookingsPage() {
       />
 
       {/* Search + filters */}
-      <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center">
+      <div className="mb-4 flex shrink-0 flex-col gap-3 xl:flex-row xl:items-center">
         <div className="xl:max-w-md xl:flex-1">
-          <SearchInput value={query} onChange={setQuery} isLoading={isBusy} placeholder="Search code, name, e-mail, phone or room" />
+          <SearchInput value={query} onChange={setQuery} isLoading={isBusy} placeholder="Search code, name or phone" />
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap">
           <FilterGroup label="Booked via" options={SOURCE_OPTIONS} value={source} onChange={setSource} />
           <FilterGroup label="Stay" options={VIEW_OPTIONS} value={view} onChange={setView} />
         </div>
@@ -144,8 +147,11 @@ export default function BookingsPage() {
       {errorMessage && <StateMessage kind="error" message={errorMessage} />}
 
       {!isLoading && !errorMessage && (
-        <div aria-busy={isBusy} className={isBusy ? 'opacity-60 transition-opacity duration-200' : 'transition-opacity duration-200'}>
-          <p className="mb-3 text-sm text-muted" aria-live="polite">
+        <div
+          aria-busy={isBusy}
+          className={`lg:flex lg:min-h-0 lg:flex-1 lg:flex-col transition-opacity duration-200 ${isBusy ? 'opacity-60' : ''}`}
+        >
+          <p className="mb-3 shrink-0 text-sm text-muted" aria-live="polite">
             {isBusy
               ? 'Searching…'
               : hasFilters
@@ -154,9 +160,9 @@ export default function BookingsPage() {
           </p>
 
           {/* Table for md and up. overflow-x-auto keeps it scrollable on narrow tablets. */}
-          <div className="hidden overflow-x-auto border border-line bg-surface [contain:paint] md:block rounded-lg">
+          <div className="hidden overflow-x-auto border border-line bg-surface [contain:paint] md:block lg:min-h-0 lg:flex-1 lg:overflow-y-auto rounded-lg">
             <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="border-b border-line text-xs uppercase tracking-[0.12em] text-muted">
+              <thead className="sticky top-0 z-10 bg-surface text-xs uppercase tracking-[0.12em] text-muted shadow-[0_1px_0_var(--color-line)]">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-bold">Guest</th>
                   <th scope="col" className="px-6 py-4 font-bold">Room</th>
@@ -276,6 +282,6 @@ export default function BookingsPage() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }

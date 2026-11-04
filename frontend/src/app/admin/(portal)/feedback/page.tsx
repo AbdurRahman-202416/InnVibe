@@ -132,10 +132,10 @@ export default function FeedbackPage() {
         <div className="xl:max-w-md xl:flex-1">
           <SearchInput value={query} onChange={setQuery} placeholder="Search message, guest, code or room" />
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center">
           <FilterGroup label="Type" options={CATEGORY_OPTIONS} value={category} onChange={setCategory} />
-          <div className="w-40">
-            <span id="rating-filter-label" className="sr-only">Rating</span>
+          <div className="flex min-w-0 flex-col gap-1.5 md:w-40">
+            <span id="rating-filter-label" className="text-xs font-bold uppercase tracking-[0.12em] text-muted md:sr-only">Rating</span>
             <Select value={rating} onChange={(value) => setRating(value as RatingFilter)} options={RATING_OPTIONS} labelledBy="rating-filter-label" />
           </div>
         </div>
