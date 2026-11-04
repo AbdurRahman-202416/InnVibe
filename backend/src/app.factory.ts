@@ -3,9 +3,7 @@ import type { INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 /**
- * Builds the configured Nest app. Shared by two entry points:
- *  - src/main.ts   (local / any Node host: calls listen)
- *  - api/index.js  (Vercel serverless: calls init and hands requests to the underlying Express app)
+ * Builds the configured Nest app (used by main.ts).
  *
  * CORS allows any website to call the API from a browser. That is safe here because staff routes need an
  * Authorization header token (no cookies are used with the API), and the public routes are public anyway.

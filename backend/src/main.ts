@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { createApp } from './app.factory';
 
-/** Local / Node-host entry point. On Vercel the app is started by api/index.js instead. */
+/** Entry point, used locally and by Vercel's zero-config NestJS support. */
 async function bootstrap() {
   const app = await createApp();
   const port = process.env.PORT ?? 4000;

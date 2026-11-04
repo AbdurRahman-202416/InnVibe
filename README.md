@@ -191,8 +191,7 @@ The API and the website are deployed independently, and each needs exactly one s
 | -------------------- | ----- |
 | `MONGODB_URI` | Atlas connection string, ending with the database name, e.g. `.../innvibe` |
 
-`backend/vercel.json` builds with `npm run build` and sends every request to `api/index.js`, which runs the compiled Nest app.
-Open `https://<backend>.vercel.app/rooms` to check it returns the room list.
+Vercel detects NestJS by itself and uses `src/main.ts` as the entry point (no `vercel.json` needed). Open `https://<backend>.vercel.app/rooms` to check it returns the room list.
 
 **3. Frontend project** (a second Vercel project, **Root Directory: `frontend`**, Next.js is detected)
 

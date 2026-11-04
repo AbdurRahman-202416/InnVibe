@@ -34,14 +34,14 @@ The only setting is **`MONGODB_URI`** (required; the API refuses to start withou
 
 ## Deploy (Vercel)
 
-`vercel.json` + `api/index.js` run the compiled app (`dist/`) as one serverless function; `src/app.factory.ts` is shared by `main.ts` (local) and `api/index.js`. Set the root directory to `backend` and add `MONGODB_URI`. Full steps are in the root README.
+Vercel detects NestJS automatically and runs `src/main.ts`, so no extra config file is needed. Set the root directory to `backend` and add `MONGODB_URI`. Full steps are in the root README.
 
 ## Modules
 
 ```
 src/
   main.ts            dotenv + listen (local)
-  app.factory.ts     builds the app + CORS, used by main.ts and api/index.js
+  app.factory.ts     builds the app + CORS, used by main.ts
   app.module.ts      Mongoose connection + feature modules
   auth/              login, scrypt password hashes, HMAC token, lockout, AuthGuard
   rooms/             room catalogue (20 rooms), seeded on start
