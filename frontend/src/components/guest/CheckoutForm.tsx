@@ -276,7 +276,7 @@ export default function CheckoutForm({ roomNumber, checkIn, checkOut, guests, to
           </div>
 
           {/* Payment method choice: three big radio buttons */}
-          <div role="radiogroup" aria-label="Payment method" className="grid grid-cols-3 gap-3">
+          <div role="radiogroup" aria-label="Payment method" className="grid grid-cols-3 gap-2 sm:gap-3">
             {METHODS.map((option) => {
               const isSelected = method === option.value;
               return (
@@ -286,15 +286,15 @@ export default function CheckoutForm({ roomNumber, checkIn, checkOut, guests, to
                   role="radio"
                   aria-checked={isSelected}
                   onClick={() => setMethod(option.value)}
-                  className={`flex min-h-16 cursor-pointer flex-col items-center justify-center border px-2 py-2 transition-colors duration-200 ${
+                  className={`flex min-h-16 cursor-pointer flex-col items-center justify-center gap-0.5 border px-1 py-2 sm:px-2 transition-colors duration-200 ${
                     isSelected ? 'border-navy bg-paper ring-1 ring-navy' : 'border-line bg-surface hover:border-gold'
                   } rounded-md`}
                 >
-                  <span className="flex h-8 items-center">
+                  <span className="flex h-6 items-center sm:h-8">
                     <PaymentLogo method={option.value} />
                   </span>
                   <span className="sr-only">{option.label}</span>
-                  <span className="text-xs text-muted">{option.hint}</span>
+                  <span className="text-center text-[11px] leading-tight text-muted sm:text-xs">{option.hint}</span>
                 </button>
               );
             })}
