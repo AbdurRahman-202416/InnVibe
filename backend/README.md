@@ -40,8 +40,7 @@ Vercel detects NestJS automatically and runs `src/main.ts`, so no extra config f
 
 ```
 src/
-  main.ts            dotenv + listen (local)
-  app.factory.ts     builds the app + CORS, used by main.ts
+  main.ts            dotenv, CORS, listen (also the Vercel entry point)
   app.module.ts      Mongoose connection + feature modules
   auth/              login, scrypt password hashes, HMAC token, lockout, AuthGuard
   rooms/             room catalogue (20 rooms), seeded on start
