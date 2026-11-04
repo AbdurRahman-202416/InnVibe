@@ -1,0 +1,27 @@
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import type { ReactNode } from 'react';
+import Sidebar from '@/components/Sidebar';
+import { getCurrentStaff } from '@/lib/staff-server';
+
+export const metadata: Metadata = { title: 'InnVibe Staff Portal' };
+
+/**
+ * Staff portal layout (every page in this route group is behind login):
+ *  - asks the API whether the cookie's token is valid; if not, back to the login page
+ *  - Sidebar (fixed on desktop, top bar on mobile) with the signed-in user and Sign out
+ *  - main content area, pushed right by the sidebar width on desktop (lg:pl-64)
+ */
+export default async function PortalLayout({ children }: { children: ReactNode }) {
+  const user = await getCurrentStaff();
+  if (!user) redirect('/admin/login');
+
+  return (
+    <>
+      <Sidebar user={user} />
+      <main className="min-h-screen lg:pl-64">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 lg:px-10 lg:py-12">{children}</div>
+      </main>
+    </>
+  );
+}

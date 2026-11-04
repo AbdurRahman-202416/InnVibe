@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+
+/*
+  InnVibe design tokens: "quiet luxury" hospitality look.
+  Warm paper background, deep navy ink, brass-gold accent, flat surfaces with hairline borders.
+  Usage: bg-paper, bg-surface, text-ink, text-muted, border-line, bg-navy, text-gold-ink ...
+*/
+@theme {
+  --color-paper: #faf7f2; /* page background (warm ivory) */
+  --color-surface: #ffffff; /* cards, sidebar, modal */
+  --color-ink: #0f1b33; /* primary text */
+  --color-muted: #5b6475; /* secondary text (5.6:1 on paper) */
+  --color-line: #e7e1d6; /* hairline borders and dividers */
+  --color-navy: #14284b; /* primary buttons, logo */
+  --color-navy-hover: #0c1a33;
+  --color-gold: #b58a2b; /* decorative accents: rules, dots, focus */
+  --color-gold-soft: #f4ead2; /* tinted backgrounds */
+  --color-gold-ink: #8a5206; /* gold used as text (6:1 on white) */
+  --color-success: #1f7a4d;
+  --color-danger: #b42318;
+}
+
+/* Fonts are loaded in layout.tsx with next/font and exposed as CSS variables. */
+@theme inline {
+  --font-display: var(--font-playfair), var(--font-bengali), Georgia, serif;
+  --font-sans: var(--font-karla), var(--font-bengali), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+/*
+  Slim, quiet scrollbars (page, modals, dropdown lists).
+  scrollbar-width / scrollbar-color are the standard properties (Chrome, Edge, Firefox, Safari 18.2+);
+  the ::-webkit-scrollbar rules below are only a fallback for older Safari.
+*/
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cfc5b0 transparent;
+}
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cfc5b0;
+    border-radius: 8px;
+  }
+}
+
+/* Playfair defaults to old-style figures; use even, lining numerals for prices and stats. */
+.font-display {
+  font-variant-numeric: lining-nums;
+}
+
+/* Visible keyboard focus everywhere (accessibility). */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* A field with an error keeps a red focus outline instead of the gold one. */
+[aria-invalid='true']:focus-visible {
+  outline-color: var(--color-danger);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+
+.animate-modal-in {
+  animation: modal-in 0.2s ease-out;
+}
+
+/* Slow zoom-in for the hero slideshow. It outlasts the 6 s slide time so it never stops mid-view. */
+.animate-hero-zoom {
+  animation: hero-zoom 9s ease-out forwards;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
