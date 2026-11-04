@@ -116,22 +116,28 @@ export default async function ConfirmationPage({ params }: { params: Promise<{ c
         </dl>
       </article>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center justify-center bg-navy px-7 text-sm font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-navy-hover rounded-md"
+          className="inline-flex min-h-11 items-center justify-center bg-navy px-5 text-sm font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-navy-hover rounded-md"
         >
           Back to home
         </Link>
         <Link
+          href="/manage"
+          className="inline-flex min-h-11 items-center justify-center border border-line px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold rounded-md"
+        >
+          Find another booking
+        </Link>
+        <Link
           href="/rooms"
-          className="inline-flex min-h-11 items-center justify-center border border-line px-7 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold rounded-md"
+          className="inline-flex min-h-11 items-center justify-center border border-line px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold rounded-md"
         >
           Book another stay
         </Link>
         <Link
           href={`/feedback?code=${booking.code}`}
-          className="inline-flex min-h-11 items-center justify-center border border-line px-7 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold rounded-md"
+          className="inline-flex min-h-11 items-center justify-center border border-line px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:border-gold rounded-md"
         >
           Share feedback
         </Link>

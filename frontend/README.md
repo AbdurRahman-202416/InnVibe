@@ -32,7 +32,7 @@ Separate Vercel project with root directory `frontend`. Set `NEXT_PUBLIC_API_URL
 | | `/rooms/<number>` | Room details, availability and price for the stay |
 | | `/book` | Checkout (card / bKash / Nagad) with inline validation |
 | | `/confirmation/<code>` | Confirmation (shows a cancelled state too) |
-| | `/manage` | "My booking": code + e-mail |
+| | `/manage` | "My booking": one box for confirmation code, e-mail or mobile number |
 | | `/feedback` | Guest feedback form |
 | Staff | `/admin/login` | Sign in |
 | | `/admin` | Dashboard |

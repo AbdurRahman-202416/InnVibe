@@ -3,7 +3,7 @@ import LookupForm from '@/components/guest/LookupForm';
 
 export const metadata: Metadata = { title: 'My booking | InnVibe' };
 
-/** "My booking": guests find a reservation with the code from their confirmation and their e-mail. */
+/** "My booking": guests find a reservation with their confirmation code, e-mail or mobile number. */
 export default function ManagePage() {
   return (
     <div className="mx-auto max-w-xl px-4 py-12 sm:px-8 sm:py-16">
@@ -12,7 +12,7 @@ export default function ManagePage() {
         Find your reservation
       </h1>
       <p className="mt-3 text-base text-muted">
-        Enter the confirmation code from your booking and the e-mail address you used.
+        Search with your confirmation code, the e-mail address or the mobile number you booked with.
       </p>
       <div className="mt-8 border border-line bg-surface p-6 sm:p-8 rounded-lg">
         <LookupForm />

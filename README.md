@@ -16,7 +16,7 @@ Two front ends share one API:
 |           | `/rooms/<number>`         | Room detail: photos, size/bed/view, amenities, availability + all-in price for chosen dates |
 |           | `/book`                   | Checkout: details, **dummy** payment (card / bKash / Nagad), popups  |
 |           | `/confirmation/IV-XXXXXX` | Booking confirmation with price breakdown, found by code             |
-|           | `/manage`                 | "My booking": find a reservation with code + e-mail                  |
+|           | `/manage`                 | "My booking": find a reservation with a code, e-mail or mobile number                  |
 |           | `/feedback`               | Guest feedback (praise / suggestion / complaint) tied to a booking   |
 | **Staff** | `/admin/login`            | Sign in (everything under `/admin` needs a session)                  |
 |           | `/admin`                  | Dashboard (rooms, active bookings, revenue, occupancy)               |
@@ -100,7 +100,7 @@ The catalogue has 20 rooms (5 single, 7 double, 5 deluxe, 3 suite); on start the
 | GET    | `/bookings/availability?checkIn=&checkOut=`    | public | Every room with `isAvailable` for that stay (no dates = tonight) |
 | GET    | `/bookings/quote?roomNumber=&checkIn=&checkOut=` | public | Price breakdown: rate x nights, service charge, VAT, total |
 | GET    | `/bookings/:code`                              | public | One booking by confirmation code                          |
-| POST   | `/bookings/lookup`                             | public | `{ code, email }` -> the booking, only if both match ("My booking") |
+| POST   | `/bookings/lookup`                             | public | `{ query }` (code, e-mail or mobile number) -> matching bookings ("My booking") |
 | POST   | `/newsletter`                                  | public | `{ email }` -> subscribe (validated, de-duplicated)       |
 | POST   | `/bookings`                                    | public with `payment`, **staff** without | Create a booking          |
 | GET    | `/bookings?q=&source=&when=&status=`           | staff  | Bookings with guest details; filters are optional         |
@@ -235,7 +235,7 @@ serverless it is best-effort; `npm run seed:sample` still runs from your compute
   capped at the room's capacity, bad or out-of-range params are clamped, an unknown room number gives a real 404.
 - **Landing page content** follows what big hotel sites (e.g. Radisson) do, kept simple: search, room types,
   "why book direct" (only real features, no invented discounts), facilities, newsletter, FAQ (native `<details>`, no JS), 4-column footer.
-  "My booking" in the header finds a reservation by code + e-mail (same error for wrong code or wrong e-mail).
+  "My booking" in the header finds a reservation by code, e-mail or mobile number (one shared "not found" message, so it cannot be used to check what exists).
 - **Search lives in the URL**, a plain GET form: shareable, back-button friendly, server-rendered.
 - **Never store card data.** The dummy gateway keeps only the last 4 digits and a reference.
 - **Accessible popups.** `Modal` uses `role="dialog"`, `aria-modal`, Escape to close, focus return, scroll lock, and renders in a
@@ -248,7 +248,7 @@ serverless it is best-effort; `npm run seed:sample` still runs from your compute
 - No HTTPS or 2FA locally (the cookie is `Secure` only in production). Lockout is per username, so an attacker could
   lock a real user out for a minute; real systems add per-IP limits.
 - Roles are shown but not enforced differently (admin and receptionist can do the same things).
-- `GET /bookings/:code` is public because the confirmation page needs it right after payment (anyone with the code can see that booking). "My booking" does check the e-mail, but the confirmation URL itself does not.
+- `GET /bookings/:code` is public because the confirmation page needs it right after payment (anyone with the code can see that booking). "My booking" also finds bookings by e-mail or mobile number alone (exact match, max 10), so anyone who knows a guest's e-mail or number can open their booking. A stricter version would need code + e-mail again, or an e-mailed one-time code.
 - Newsletter sign-ups are stored in MongoDB, but there is no unsubscribe or e-mail sending.
 - Guests cannot cancel online (staff cancel from the portal); e-mail and SMS are not built, and the cancellation policy popup is informational.
 - Feedback can be sent any time after a booking exists (code + e-mail), including before check-in.

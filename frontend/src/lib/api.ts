@@ -61,9 +61,9 @@ export const subscribeNewsletter = (email: string) =>
     body: JSON.stringify({ email }),
   });
 
-/** "My booking": both the confirmation code and the e-mail used at booking must match. */
-export const lookupBooking = (code: string, email: string) =>
-  request<Booking>('/bookings/lookup', { method: 'POST', body: JSON.stringify({ code, email }) });
+/** "My booking": one search text, a confirmation code, e-mail or mobile number. Returns the matching bookings (newest first). */
+export const lookupBookings = (query: string) =>
+  request<Booking[]>('/bookings/lookup', { method: 'POST', body: JSON.stringify({ query }) });
 
 /** A guest leaves feedback. Proven with the booking code + the e-mail used for the booking. One review per booking. */
 export const submitReview = (input: { code: string; email: string; rating: number; category: string; message: string }) =>

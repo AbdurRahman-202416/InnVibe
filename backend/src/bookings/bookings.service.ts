@@ -153,6 +153,37 @@ export class BookingsService implements OnModuleInit {
   }
 
   /**
+   * "My booking" search with ONE box: a confirmation code, an e-mail address or a mobile number.
+   * Matches are exact (not "contains"), newest stay first, at most 10. A well-formed query that matches
+   * nothing always gets the same answer, so it cannot be used to check which codes, e-mails or numbers exist.
+   * (The reviews service still uses lookup(), which needs code AND e-mail.)
+   */
+  async search(query: unknown): Promise<Booking[]> {
+    assertText(query, 'query', { required: true, max: 100 });
+    const text = (query as string).trim();
+    let filter: Record<string, unknown>;
+
+    if (text.includes('@')) {
+      filter = { guestEmail: new RegExp(`^${escapeRegex(text)}$`, 'i') };
+    } else if (/^\+?[\d\s-]{10,16}$/.test(text)) {
+      // "+8801712345678", "880 1712-345678" and "01712345678" are all the same number.
+      const digits = text.replace(/\D/g, '').replace(/^880/, '');
+      const local = digits.startsWith('0') ? digits : `0${digits}`;
+      filter = { guestPhone: { $in: [local, `+880${local.slice(1)}`, `880${local.slice(1)}`] } };
+    } else {
+      const code = text.toUpperCase().replace(/\s/g, '');
+      if (!/^(IV-)?[A-Z0-9]{6}$/.test(code)) {
+        throw new BadRequestException('Enter a confirmation code, e-mail address or mobile number');
+      }
+      filter = { code: code.startsWith('IV-') ? code : `IV-${code}` };
+    }
+
+    const rows = await this.bookingModel.find(filter).sort({ checkIn: -1 }).limit(10).lean();
+    if (rows.length === 0) throw new NotFoundException('We could not find a booking with those details');
+    return rows.map((row) => toBooking(row));
+  }
+
+  /**
    * Every room, each flagged with isAvailable for the given stay.
    * Dates are optional: with none, we answer "is it free tonight?" (used by the staff dashboard).
    */

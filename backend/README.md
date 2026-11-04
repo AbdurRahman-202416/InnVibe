@@ -74,7 +74,7 @@ First start on an empty database seeds rooms, the two staff accounts and 3 sampl
 | GET | `/bookings/availability?checkIn=&checkOut=` | public | Every room with computed `isAvailable` |
 | GET | `/bookings/quote?roomNumber=&checkIn=&checkOut=` | public | Price breakdown |
 | GET | `/bookings/:code` | public | Booking by confirmation code |
-| POST | `/bookings/lookup` | public | `{ code, email }` for "My booking" |
+| POST | `/bookings/lookup` | public | `{ query }`: a confirmation code, e-mail or mobile number, returns the matching bookings |
 | POST | `/bookings` | public with `payment`, staff without | Create a booking |
 | GET | `/bookings?q=&source=&when=&status=` | staff | Search and filter bookings |
 | POST | `/bookings/:code/cancel` | staff | `{ reason }` (3-300 chars), frees the room |

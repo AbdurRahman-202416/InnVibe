@@ -66,10 +66,10 @@ export class BookingsController {
     return this.bookingsService.findByCode(code);
   }
 
-  /** POST /bookings/lookup { code, email } -> find "my booking" (both must match). Public. */
+  /** POST /bookings/lookup { query } -> "my booking": query is a confirmation code, e-mail or mobile number. Public. */
   @Post('lookup')
-  lookup(@Body() body: { code?: string; email?: string }): Promise<Booking> {
-    return this.bookingsService.lookup(body?.code, body?.email);
+  lookup(@Body() body: { query?: unknown }): Promise<Booking[]> {
+    return this.bookingsService.search(body?.query);
   }
 
   /**
