@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { mongoDbName, mongoUri } from './common/config';
 import { BookingsModule } from './bookings/bookings.module';
@@ -9,6 +10,7 @@ import { RoomsModule } from './rooms/rooms.module';
 
 /** Root module: connects to MongoDB (Atlas) and wires the feature modules together. */
 @Module({
+  controllers: [AppController],
   imports: [
     MongooseModule.forRootAsync({
       useFactory: () => {
