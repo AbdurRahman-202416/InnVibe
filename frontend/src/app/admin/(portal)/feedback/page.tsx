@@ -48,7 +48,7 @@ export default function FeedbackPage() {
   const hasFilters = Boolean(debouncedQuery.trim() || category || rating);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    const timer = setTimeout(() => setDebouncedQuery(query), 500);
     return () => clearTimeout(timer);
   }, [query]);
 

@@ -5,10 +5,12 @@ interface SearchInputProps {
   onChange: (value: string) => void;
   /** Visible hint inside the box, and the accessible name of the field. */
   placeholder: string;
+  /** True while the search is running: a small spinner shows inside the box. */
+  isLoading?: boolean;
 }
 
 /** Search box with a magnifier and a clear (X) button. The parent decides when to actually search (e.g. after a pause in typing). */
-export default function SearchInput({ value, onChange, placeholder }: SearchInputProps) {
+export default function SearchInput({ value, onChange, placeholder, isLoading = false }: SearchInputProps) {
   return (
     <div role="search" className="relative w-full">
       <svg
@@ -32,6 +34,12 @@ export default function SearchInput({ value, onChange, placeholder }: SearchInpu
         autoComplete="off"
         className="min-h-11 w-full border border-line bg-surface py-2 pl-11 pr-11 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-gold focus:ring-2 focus:ring-gold/25 [&::-webkit-search-cancel-button]:hidden rounded-md"
       />
+      {isLoading && (
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-line border-t-gold-ink motion-safe:animate-spin ${value ? 'right-11' : 'right-3.5'}`}
+        />
+      )}
       {value && (
         <button
           type="button"

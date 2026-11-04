@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import BookingDetailsModal from '@/components/admin/BookingDetailsModal';
 import FilterGroup from '@/components/admin/FilterGroup';
 import SearchInput from '@/components/admin/SearchInput';
@@ -60,10 +60,12 @@ export default function BookingsPage() {
   const [source, setSource] = useState<Source>('');
   const [view, setView] = useState<View>('');
   const hasFilters = Boolean(debouncedQuery.trim() || source || view);
+  // Busy from the first keystroke (waiting for the typing pause) until the answer arrives.
+  const isBusy = isSearching || query !== debouncedQuery;
 
   // Wait until the user pauses typing before asking the server.
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    const timer = setTimeout(() => setDebouncedQuery(query), 500);
     return () => clearTimeout(timer);
   }, [query]);
 
@@ -72,7 +74,12 @@ export default function BookingsPage() {
     getAvailability().then(setRooms).catch(() => undefined);
   }, []);
 
+  // Every request gets a number. Only the newest one may update the screen, so a slow older answer
+  // can never overwrite the result of what was typed last (and never switches the spinner off early).
+  const latestRequest = useRef(0);
+
   const loadBookings = useCallback(async () => {
+    const requestId = ++latestRequest.current;
     setIsSearching(true);
     try {
       const rows = await getStaffBookingsClient({
@@ -81,15 +88,16 @@ export default function BookingsPage() {
         when: view === 'cancelled' ? '' : view,
         status: view === 'cancelled' ? 'cancelled' : '',
       });
+      if (requestId !== latestRequest.current) return; // a newer search has started: drop this answer
       // Latest arrival first (future stays on top, finished stays at the bottom). The API is oldest-booked-first.
       setBookings([...rows].reverse().sort((a, b) => b.checkIn.localeCompare(a.checkIn)));
       setErrorMessage('');
     } catch {
-      setErrorMessage('Could not load bookings. Make sure the NestJS backend is running on port 4000.');
-    } finally {
-      setIsLoading(false);
-      setIsSearching(false);
+      if (requestId !== latestRequest.current) return;
+      setErrorMessage('Could not load bookings. Please check your connection and try again.');
     }
+    setIsLoading(false);
+    setIsSearching(false);
   }, [debouncedQuery, source, view]);
 
   useEffect(() => {
@@ -124,7 +132,7 @@ export default function BookingsPage() {
       {/* Search + filters */}
       <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center">
         <div className="xl:max-w-md xl:flex-1">
-          <SearchInput value={query} onChange={setQuery} placeholder="Search code, name, e-mail, phone or room" />
+          <SearchInput value={query} onChange={setQuery} isLoading={isBusy} placeholder="Search code, name, e-mail, phone or room" />
         </div>
         <div className="flex flex-wrap gap-3">
           <FilterGroup label="Booked via" options={SOURCE_OPTIONS} value={source} onChange={setSource} />
@@ -136,9 +144,11 @@ export default function BookingsPage() {
       {errorMessage && <StateMessage kind="error" message={errorMessage} />}
 
       {!isLoading && !errorMessage && (
-        <div className={isSearching ? 'opacity-60 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <div aria-busy={isBusy} className={isBusy ? 'opacity-60 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           <p className="mb-3 text-sm text-muted" aria-live="polite">
-            {hasFilters
+            {isBusy
+              ? 'Searching…'
+              : hasFilters
               ? `${bookings.length} ${bookings.length === 1 ? 'booking matches' : 'bookings match'} your search`
               : `${bookings.length} ${bookings.length === 1 ? 'booking' : 'bookings'}`}
           </p>
