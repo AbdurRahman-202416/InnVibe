@@ -46,8 +46,8 @@ export class BookingEntity {
   @Prop({ type: String, required: true, enum: ['online', 'front-desk'] })
   source: 'online' | 'front-desk';
 
-  @Prop({ type: String, enum: ['card', 'bkash', 'nagad'] })
-  paymentMethod?: 'card' | 'bkash' | 'nagad';
+  @Prop({ type: String, enum: ['card', 'bkash', 'nagad', 'cash', 'pos', 'bank', 'pay-later'] })
+  paymentMethod?: 'card' | 'bkash' | 'nagad' | 'cash' | 'pos' | 'bank' | 'pay-later';
 
   @Prop({ type: String })
   paymentReference?: string;

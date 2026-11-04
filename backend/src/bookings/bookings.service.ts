@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Room, RoomAvailability } from '../rooms/room.interface';
 import { RoomsService } from '../rooms/rooms.service';
 import { assertText, escapeRegex } from '../common/validation';
-import { Booking, CreateBookingInput } from './booking.interface';
+import { Booking, CreateBookingInput, FRONT_DESK_PAYMENT_METHODS, FrontDeskPaymentMethod } from './booking.interface';
 import { BookingDocument, BookingEntity, RoomNightDocument, RoomNightEntity } from './booking.schema';
 import { PaymentsService } from './payments.service';
 import { calculatePricing, Pricing } from './pricing';
@@ -278,6 +278,26 @@ export class BookingsService implements OnModuleInit {
       throw new BadRequestException('guestEmail is required for online bookings');
     }
 
+    // Front desk (no online payment): staff must record how to reach the guest and how the guest pays.
+    let staffMethod: FrontDeskPaymentMethod | undefined;
+    let staffReference: string | undefined;
+    if (!payment) {
+      assertText(input.paymentMethod, 'paymentMethod', { max: 20 });
+      assertText(input.paymentReference, 'paymentReference', { max: 40 });
+      if (!/^01[3-9]\d{8}$/.test(guestPhone?.trim() ?? '')) {
+        throw new BadRequestException('Enter a valid mobile number (01XXXXXXXXX)');
+      }
+      if (guestEmail?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(guestEmail.trim())) {
+        throw new BadRequestException('Enter a valid e-mail address');
+      }
+      if (!FRONT_DESK_PAYMENT_METHODS.includes(input.paymentMethod as FrontDeskPaymentMethod)) {
+        throw new BadRequestException('Choose how the guest is paying');
+      }
+      staffMethod = input.paymentMethod as FrontDeskPaymentMethod;
+      // A receipt / transaction number only makes sense when money was actually received by card, wallet or bank.
+      staffReference = staffMethod === 'cash' || staffMethod === 'pay-later' ? undefined : input.paymentReference?.trim() || undefined;
+    }
+
     const nights = this.calculateNights(checkIn, checkOut);
 
     const room: Room | null = await this.roomsService.findByRoomNumber(roomNumber);
@@ -316,8 +336,8 @@ export class BookingsService implements OnModuleInit {
         vat: pricing.vat,
         totalAmount: pricing.totalAmount,
         source: payment ? 'online' : 'front-desk',
-        paymentMethod: receipt?.method,
-        paymentReference: receipt?.reference,
+        paymentMethod: receipt?.method ?? staffMethod,
+        paymentReference: receipt?.reference ?? staffReference,
         paymentLast4: receipt?.last4,
       });
       return toBooking(saved);

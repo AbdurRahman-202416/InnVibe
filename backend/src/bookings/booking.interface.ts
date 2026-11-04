@@ -1,4 +1,12 @@
+/** Methods an online guest can pay with. */
 export type PaymentMethod = 'card' | 'bkash' | 'nagad';
+
+/** How a guest pays at the front desk (chosen by staff). "pay-later" means nothing was collected yet. */
+export const FRONT_DESK_PAYMENT_METHODS = ['cash', 'pos', 'bkash', 'nagad', 'bank', 'pay-later'] as const;
+export type FrontDeskPaymentMethod = (typeof FRONT_DESK_PAYMENT_METHODS)[number];
+
+/** Whatever is stored on a booking: an online method or a front-desk one. */
+export type BookingPaymentMethod = PaymentMethod | FrontDeskPaymentMethod;
 
 /** Shape of a booking record kept in the in-memory array. */
 export interface Booking {
@@ -17,8 +25,8 @@ export interface Booking {
   vat: number; // BDT
   totalAmount: number; // BDT, subtotal + serviceCharge + vat
   source: 'online' | 'front-desk'; // booked by the guest on the website, or by staff
-  paymentMethod?: PaymentMethod;
-  paymentReference?: string; // only set for online bookings that were charged
+  paymentMethod?: BookingPaymentMethod;
+  paymentReference?: string; // online: generated gateway reference. Front desk: receipt / transaction number typed by staff (optional)
   paymentLast4?: string; // last 4 digits of the card or mobile number. Nothing more is kept.
   status: 'confirmed' | 'cancelled';
   cancelledAt?: string; // ISO timestamp
@@ -41,5 +49,8 @@ export interface CreateBookingInput {
   roomNumber: string;
   checkIn: string;
   checkOut: string;
-  payment?: PaymentInput; // present for online bookings, absent for front-desk bookings
+  payment?: PaymentInput;
+  /** Front-desk bookings only: how the guest pays, and an optional receipt / transaction number. */
+  paymentMethod?: string;
+  paymentReference?: string; // present for online bookings, absent for front-desk bookings
 }

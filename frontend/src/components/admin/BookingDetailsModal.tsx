@@ -2,12 +2,11 @@
 
 import { FormEvent, useState } from 'react';
 import Modal from '@/components/Modal';
-import { formatCurrency, formatDate, formatDateTime, nightsBetween, todayIso } from '@/lib/format';
+import { describePayment, formatCurrency, formatDate, formatDateTime, nightsBetween, todayIso } from '@/lib/format';
 import { cancelStaffBooking } from '@/lib/staff-client';
 import type { Booking, Room } from '@/lib/types';
 import StayBadge, { bookingStatus } from './StayBadge';
 
-const PAYMENT_LABELS = { card: 'Card', bkash: 'bKash', nagad: 'Nagad' } as const;
 const QUICK_REASONS = ['Guest requested', 'No-show', 'Payment problem', 'Room unavailable', 'Duplicate booking'];
 const MAX_REASON = 300;
 
@@ -45,9 +44,7 @@ export default function BookingDetailsModal({ booking, room, onClose, onCancelle
   const nights = nightsBetween(booking.checkIn, booking.checkOut);
   const isCancelled = booking.status === 'cancelled';
   const canCancel = !isCancelled && booking.checkOut > todayIso(); // a finished stay cannot be cancelled
-  const paid = booking.paymentLast4
-    ? `${PAYMENT_LABELS[booking.paymentMethod ?? 'card']} ending ${booking.paymentLast4}`
-    : 'Not paid online (front desk)';
+  const paid = describePayment(booking);
   const reasonError = attempted && reason.trim().length < 3 ? 'Please give a reason (at least 3 characters).' : '';
 
   async function handleCancel(event: FormEvent<HTMLFormElement>) {

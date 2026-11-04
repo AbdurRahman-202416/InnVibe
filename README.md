@@ -118,7 +118,8 @@ Booking rules (all in `bookings.service.ts`):
 4. price is calculated by the server (`pricing.ts`): `rate x nights`, + **10% service charge**, + **15% VAT**
    on (rate + service charge), rounded to whole taka
 5. if `payment` is present, `PaymentsService` "charges" it (dummy gateway) only after steps 1-4 passed.
-   A booking without `payment` is a front-desk booking and needs a staff token
+   A booking without `payment` is a front-desk booking: it needs a staff token, a valid mobile number and a payment method
+   (`cash`, `pos`, `bkash`, `nagad`, `bank` or `pay-later`), plus optional e-mail, special requests and a receipt / transaction number
 
 Availability is **never stored** on a room. It is calculated from the bookings.
 

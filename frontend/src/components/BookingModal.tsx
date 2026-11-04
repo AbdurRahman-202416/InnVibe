@@ -7,7 +7,7 @@ import Select from '@/components/ui/Select';
 import { getQuote } from '@/lib/api';
 import { addDays, formatCurrency, nightsBetween, todayIso } from '@/lib/format';
 import { createStaffBooking } from '@/lib/staff-client';
-import type { Pricing, Room } from '@/lib/types';
+import type { FrontDeskPaymentMethod, Pricing, Room } from '@/lib/types';
 
 interface BookingModalProps {
   /** Every room; the server checks the dates and rejects overlaps. */
@@ -18,6 +18,21 @@ interface BookingModalProps {
   /** Called after the API confirmed the booking so the parent can refresh its data. */
   onBooked: () => void;
 }
+
+const MOBILE_NUMBER = /^01[3-9]\d{8}$/; // Bangladeshi mobile: 01 + operator digit + 8 digits
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/** How the guest pays at the desk. "pay-later" records that nothing was collected yet. */
+const PAYMENT_OPTIONS: { value: FrontDeskPaymentMethod; label: string; hint: string }[] = [
+  { value: 'cash', label: 'Cash', hint: 'paid at the desk' },
+  { value: 'pos', label: 'Card (POS)', hint: 'paid by card machine' },
+  { value: 'bkash', label: 'bKash', hint: 'mobile wallet' },
+  { value: 'nagad', label: 'Nagad', hint: 'mobile wallet' },
+  { value: 'bank', label: 'Bank transfer', hint: 'received in the account' },
+  { value: 'pay-later', label: 'Pay at check-in', hint: 'not paid yet' },
+];
+/** Methods where staff can note a receipt or transaction number. */
+const NEEDS_REFERENCE: FrontDeskPaymentMethod[] = ['pos', 'bkash', 'nagad', 'bank'];
 
 /** Small section title used to group the form. */
 function SectionTitle({ children }: { children: string }) {
@@ -47,6 +62,11 @@ function FieldError({ id, message }: { id: string; message: string }) {
 export default function BookingModal({ rooms, initialRoomNumber, onClose, onBooked }: BookingModalProps) {
   const ids = useId();
   const [guestName, setGuestName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [requests, setRequests] = useState('');
+  const [payMethod, setPayMethod] = useState<FrontDeskPaymentMethod>('cash');
+  const [payReference, setPayReference] = useState('');
   const [roomNumber, setRoomNumber] = useState(initialRoomNumber ?? rooms[0]?.roomNumber ?? '');
   const [checkIn, setCheckIn] = useState(todayIso());
   const [checkOut, setCheckOut] = useState('');
@@ -62,6 +82,8 @@ export default function BookingModal({ rooms, initialRoomNumber, onClose, onBook
   const nights = checkOut ? nightsBetween(checkIn, checkOut) : 0;
 
   const nameError = attempted && !guestName.trim() ? 'Enter the guest name.' : '';
+  const phoneError = attempted && !MOBILE_NUMBER.test(phone) ? 'Enter a valid mobile number.' : '';
+  const emailError = attempted && email.trim() && !EMAIL.test(email.trim()) ? 'Enter a valid e-mail address.' : '';
   const checkOutError = attempted && !checkOut ? 'Select a check-out date.' : '';
 
   // Escape closes the dialog (an open calendar/dropdown handles Escape first), the page behind stops
@@ -102,15 +124,35 @@ export default function BookingModal({ rooms, initialRoomNumber, onClose, onBook
     setErrorMessage('');
     setAttempted(true);
 
-    if (!guestName.trim() || !checkOut) {
-      // Put the cursor on the first problem.
-      document.getElementById(guestName.trim() ? `${ids}-out-trigger` : `${ids}-name`)?.focus();
+    // Put the cursor on the first problem, in the order the fields appear.
+    const firstProblem = !guestName.trim()
+      ? `${ids}-name`
+      : !MOBILE_NUMBER.test(phone)
+        ? `${ids}-phone`
+        : email.trim() && !EMAIL.test(email.trim())
+          ? `${ids}-email`
+          : !checkOut
+            ? `${ids}-out-trigger`
+            : '';
+    if (firstProblem) {
+      document.getElementById(firstProblem)?.focus();
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await createStaffBooking({ guestName: guestName.trim(), guests: safeGuests, roomNumber, checkIn, checkOut });
+      await createStaffBooking({
+        guestName: guestName.trim(),
+        guestPhone: phone,
+        guestEmail: email.trim() || undefined,
+        specialRequests: requests.trim() || undefined,
+        guests: safeGuests,
+        roomNumber,
+        checkIn,
+        checkOut,
+        paymentMethod: payMethod,
+        paymentReference: NEEDS_REFERENCE.includes(payMethod) ? payReference.trim() || undefined : undefined,
+      });
       onBooked();
       onClose();
     } catch (error) {
@@ -202,6 +244,50 @@ export default function BookingModal({ rooms, initialRoomNumber, onClose, onBook
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="flex flex-col gap-1.5">
+                        <label htmlFor={`${ids}-phone`} className={labelClasses}>Mobile number</label>
+                        <div className="flex">
+                          <span
+                            className={`flex min-h-11 items-center rounded-l-md border border-r-0 bg-paper px-3.5 text-base text-muted ${
+                              phoneError ? 'border-danger' : 'border-line'
+                            }`}
+                          >
+                            +880
+                          </span>
+                          <input
+                            id={`${ids}-phone`}
+                            type="tel"
+                            inputMode="numeric"
+                            autoComplete="off"
+                            value={phone}
+                            onChange={(event) => setPhone(event.target.value.replace(/\D/g, '').slice(0, 11))}
+                            placeholder="01XXXXXXXXX"
+                            aria-invalid={phoneError ? true : undefined}
+                            aria-describedby={phoneError ? `${ids}-phone-error` : undefined}
+                            className={`${inputClasses(Boolean(phoneError))} rounded-l-none tabular-nums`}
+                          />
+                        </div>
+                        {phoneError && <FieldError id={`${ids}-phone-error`} message={phoneError} />}
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label htmlFor={`${ids}-email`} className={labelClasses}>
+                          E-mail <span className="font-normal text-muted">(optional)</span>
+                        </label>
+                        <input
+                          id={`${ids}-email`}
+                          type="email"
+                          autoComplete="off"
+                          value={email}
+                          onChange={(event) => setEmail(event.target.value)}
+                          placeholder="name@example.com"
+                          aria-invalid={emailError ? true : undefined}
+                          aria-describedby={emailError ? `${ids}-email-error` : undefined}
+                          className={inputClasses(Boolean(emailError))}
+                        />
+                        {emailError && <FieldError id={`${ids}-email-error`} message={emailError} />}
+                      </div>
+                    </div>
                   </section>
 
                   <section className="flex flex-col gap-4">
@@ -250,6 +336,54 @@ export default function BookingModal({ rooms, initialRoomNumber, onClose, onBook
                         />
                         {checkOutError && <FieldError id={`${ids}-out-error`} message={checkOutError} />}
                       </div>
+                    </div>
+                  </section>
+
+                  <section className="flex flex-col gap-4">
+                    <SectionTitle>Payment</SectionTitle>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="flex flex-col gap-1.5">
+                        <span id={`${ids}-pay`} className={labelClasses}>Payment method</span>
+                        <Select
+                          value={payMethod}
+                          onChange={(value) => setPayMethod(value as FrontDeskPaymentMethod)}
+                          labelledBy={`${ids}-pay`}
+                          options={PAYMENT_OPTIONS}
+                        />
+                      </div>
+                      {NEEDS_REFERENCE.includes(payMethod) && (
+                        <div className="flex flex-col gap-1.5">
+                          <label htmlFor={`${ids}-ref`} className={labelClasses}>
+                            Receipt no. <span className="font-normal text-muted">(optional)</span>
+                          </label>
+                          <input
+                            id={`${ids}-ref`}
+                            autoComplete="off"
+                            maxLength={40}
+                            value={payReference}
+                            onChange={(event) => setPayReference(event.target.value)}
+                            placeholder="e.g. 8N7A5K2P"
+                            className={inputClasses(false)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {payMethod === 'pay-later' && (
+                      <p className="text-sm text-muted">Nothing is collected now. The booking will show as pay at check-in.</p>
+                    )}
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor={`${ids}-requests`} className={labelClasses}>
+                        Special requests <span className="font-normal text-muted">(optional)</span>
+                      </label>
+                      <textarea
+                        id={`${ids}-requests`}
+                        rows={2}
+                        maxLength={500}
+                        value={requests}
+                        onChange={(event) => setRequests(event.target.value)}
+                        placeholder="Late check-in, extra pillows, quiet room…"
+                        className={`${inputClasses(false)} py-2.5`}
+                      />
                     </div>
                   </section>
                 </div>

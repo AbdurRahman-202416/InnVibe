@@ -1,3 +1,4 @@
+import type { Booking, BookingPaymentMethod } from './types';
 /**
  * Format an amount as Bangladeshi taka, e.g. 24035 -> "৳24,035", 123456 -> "৳1,23,456".
  * "en-IN" gives the lakh/crore digit grouping that Bangladesh uses too.
@@ -46,3 +47,22 @@ export const stayStatus = (checkIn: string, checkOut: string): StayStatus => {
 /** "Nov 4, 2026, 2:30 PM" in the viewer's timezone. */
 export const formatDateTime = (isoTimestamp: string) =>
   new Date(isoTimestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+/** Names of every payment method, online and front desk. */
+export const PAYMENT_LABELS: Record<BookingPaymentMethod, string> = {
+  card: 'Card',
+  bkash: 'bKash',
+  nagad: 'Nagad',
+  cash: 'Cash',
+  pos: 'Card (POS machine)',
+  bank: 'Bank transfer',
+  'pay-later': 'Pay at check-in',
+};
+
+/** One line describing how a booking is paid: "Card ending 4242", "Cash", "Pay at check-in (not paid yet)". */
+export const describePayment = (booking: Pick<Booking, 'paymentMethod' | 'paymentLast4'>): string => {
+  if (booking.paymentLast4) return `${PAYMENT_LABELS[booking.paymentMethod ?? 'card']} ending ${booking.paymentLast4}`;
+  if (booking.paymentMethod === 'pay-later') return 'Pay at check-in (not paid yet)';
+  if (booking.paymentMethod) return PAYMENT_LABELS[booking.paymentMethod];
+  return 'Pay at the front desk';
+};

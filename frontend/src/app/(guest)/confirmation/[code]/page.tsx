@@ -3,11 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Icon from '@/components/guest/Icon';
 import { getBookingByCode, getRooms } from '@/lib/api';
-import { formatCurrency, formatDate, nightsBetween } from '@/lib/format';
+import { describePayment, formatCurrency, formatDate, nightsBetween } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
-const PAYMENT_LABELS = { card: 'Card', bkash: 'bKash', nagad: 'Nagad' } as const;
 
 /** Confirmation page: looked up by the booking code in the URL (/confirmation/IV-7K2M9Q). */
 export default async function ConfirmationPage({ params }: { params: Promise<{ code: string }> }) {
@@ -80,9 +79,7 @@ export default async function ConfirmationPage({ params }: { params: Promise<{ c
           <div>
             <dt className="text-muted">Payment</dt>
             <dd className="mt-0.5 text-base font-semibold text-ink">
-              {booking.paymentLast4
-                ? `${PAYMENT_LABELS[booking.paymentMethod ?? 'card']} ending ${booking.paymentLast4}`
-                : 'Pay at the front desk'}
+              {describePayment(booking)}
             </dd>
             {booking.paymentReference && <dd className="text-xs text-muted">Ref {booking.paymentReference}</dd>}
           </div>

@@ -21,7 +21,14 @@ export interface RoomAvailability extends Room {
   isAvailable: boolean;
 }
 
+/** Methods an online guest can pay with. */
 export type PaymentMethod = 'card' | 'bkash' | 'nagad';
+
+/** How a guest pays at the front desk (chosen by staff). "pay-later" = nothing collected yet. */
+export type FrontDeskPaymentMethod = 'cash' | 'pos' | 'bkash' | 'nagad' | 'bank' | 'pay-later';
+
+/** Whatever is stored on a booking. */
+export type BookingPaymentMethod = PaymentMethod | FrontDeskPaymentMethod;
 
 export interface Booking {
   id: string;
@@ -39,7 +46,7 @@ export interface Booking {
   vat: number;
   totalAmount: number;
   source: 'online' | 'front-desk';
-  paymentMethod?: PaymentMethod;
+  paymentMethod?: BookingPaymentMethod;
   paymentReference?: string;
   paymentLast4?: string;
   status: 'confirmed' | 'cancelled';
@@ -73,6 +80,8 @@ export interface NewBookingInput {
   checkIn: string;
   checkOut: string;
   payment?: PaymentInput;
+  paymentMethod?: FrontDeskPaymentMethod; // front-desk bookings: how the guest pays
+  paymentReference?: string; // front-desk bookings: optional receipt / transaction number
 }
 
 export type ReviewCategory = 'praise' | 'suggestion' | 'complaint';
