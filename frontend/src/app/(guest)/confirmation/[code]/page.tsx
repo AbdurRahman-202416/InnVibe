@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -6,6 +7,7 @@ import { getBookingByCode, getRooms } from '@/lib/api';
 import { describePayment, formatCurrency, formatDate, nightsBetween } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'Booking confirmation | InnVibe' };
 
 
 /** Confirmation page: looked up by the booking code in the URL (/confirmation/IV-7K2M9Q). */

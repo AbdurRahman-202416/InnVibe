@@ -46,8 +46,7 @@ export default function BookingSummary({
       </div>
 
       <div className="p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Your stay</p>
-        <h2 className="mt-1 font-display text-2xl font-semibold text-ink">
+        <h2 className="font-display text-2xl font-semibold text-ink">
           {type} · Room {roomNumber}
         </h2>
 

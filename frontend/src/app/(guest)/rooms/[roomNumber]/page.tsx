@@ -44,7 +44,7 @@ export default async function RoomDetailPage({ params, searchParams }: { params:
   } catch {
     return (
       <div className="mx-auto max-w-3xl px-4 py-14 sm:px-8">
-        <StateMessage kind="error" message="Could not reach the API. Make sure the NestJS backend is running on port 4000." />
+        <StateMessage kind="error" message="We could not load this page right now. Please try again in a moment." />
       </div>
     );
   }
@@ -83,7 +83,7 @@ export default async function RoomDetailPage({ params, searchParams }: { params:
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="text-sm text-muted">
-        <Link href={`/rooms?${stay}`} className="underline-offset-4 hover:text-ink hover:underline">
+        <Link href={`/rooms?${stay}`} className="inline-block py-2 underline-offset-4 hover:text-ink hover:underline">
           Rooms &amp; suites
         </Link>
         <span aria-hidden="true" className="mx-2">›</span>
@@ -92,8 +92,7 @@ export default async function RoomDetailPage({ params, searchParams }: { params:
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">{room.type}</p>
-          <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink sm:text-5xl">
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-5xl">
             Room {room.roomNumber}
           </h1>
         </div>
@@ -187,7 +186,7 @@ export default async function RoomDetailPage({ params, searchParams }: { params:
 
           <div className="mt-6 border-t border-line pt-5" aria-live="polite">
             {!fitsGuests ? (
-              <p className="rounded-md border border-gold/40 bg-gold-soft p-4 text-sm text-gold-ink">
+              <p className="rounded-md border border-gold/40 bg-gold-soft p-4 text-sm text-pretty text-gold-ink">
                 This room sleeps up to {room.capacity} guest{room.capacity > 1 ? 's' : ''}. We have shown it for {guests}.
               </p>
             ) : null}

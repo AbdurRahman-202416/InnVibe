@@ -42,7 +42,10 @@ export default function HeroSlider() {
   }, []);
 
   useEffect(() => {
+    // People who asked for less motion get one still photo.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = setInterval(() => {
+      if (document.hidden) return; // do not rotate while the tab is in the background
       const next = (activeRef.current + 1) % SLIDES.length;
       setPrevious(activeRef.current); // keep the old photo zooming while it fades out
       setActive(next);

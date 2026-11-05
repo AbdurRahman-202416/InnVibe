@@ -10,8 +10,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-8 sm:py-16">
-      <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Feedback</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Tell us about your stay</h1>
+      <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Tell us about your stay</h1>
       <p className="mt-3 text-base text-muted">
         Praise, an idea or a problem: our team reads every message. Use the booking code and the e-mail from your confirmation.
       </p>

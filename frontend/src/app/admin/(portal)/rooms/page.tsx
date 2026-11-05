@@ -29,7 +29,7 @@ export default function RoomsPage() {
       setRooms(await getAvailability());
       setErrorMessage('');
     } catch {
-      setErrorMessage('Could not load rooms. Make sure the NestJS backend is running on port 4000.');
+      setErrorMessage('Could not load rooms. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }

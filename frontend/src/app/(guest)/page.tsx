@@ -18,22 +18,18 @@ const BENEFITS = [
   {
     title: 'All-in prices',
     text: 'The total you see includes the 10% service charge and 15% VAT. No surprises at checkout.',
-    path: 'M20 12l-8 8-9-9V3h8l9 9zM7.5 7.5h.01',
   },
   {
     title: 'Pay your way',
     text: 'Card, bKash or Nagad. Choose what is easiest for you.',
-    path: 'M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2',
   },
   {
     title: 'Free cancellation',
     text: 'Change of plans? Cancel up to 24 hours before check-in at no cost.',
-    path: 'M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1zM9 16l2 2 4-4',
   },
   {
     title: 'Breakfast in every Suite',
     text: 'Start the day with a full breakfast, included when you book a Suite.',
-    path: 'M4 9h13v5a5 5 0 01-5 5H9a5 5 0 01-5-5V9zM17 10h1.500a2.500 2.500 0 010 5H17M8 3v3M12 3v3',
   },
 ];
 
@@ -82,8 +78,7 @@ export default async function LandingPage() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-navy/90 via-navy/60 to-navy/45" />
 
         <div className="mx-auto max-w-6xl px-4 pb-32 pt-24 sm:px-8 sm:pb-40 sm:pt-32">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-soft">Boutique hotel</p>
-          <h1 className="mt-4 max-w-2xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-6xl">
+          <h1 className="max-w-2xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-6xl">
             Stay somewhere worth coming back to.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/85">
@@ -93,20 +88,19 @@ export default async function LandingPage() {
       </section>
 
       {/* Search card overlaps the bottom of the hero */}
-      <div className="relative z-10 mx-auto -mt-20 max-w-6xl px-4 sm:-mt-24 sm:px-8">
+      <div id="search" className="relative z-10 mx-auto -mt-20 max-w-6xl scroll-mt-24 px-4 sm:-mt-24 sm:px-8">
         <SearchForm defaultCheckIn={checkIn} defaultCheckOut={checkOut} defaultGuests={2} minDate={today} />
       </div>
 
       {/* Room types */}
       <section id="rooms" className="mx-auto mt-24 max-w-6xl px-4 sm:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Rooms &amp; suites</p>
-        <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           A room for every kind of trip
         </h2>
 
         {hasError ? (
           <div className="mt-8">
-            <StateMessage kind="error" message="Rooms could not be loaded. Make sure the NestJS backend is running on port 4000." />
+            <StateMessage kind="error" message="Rooms are unavailable right now. Please try again in a moment." />
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -128,7 +122,8 @@ export default async function LandingPage() {
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-display text-2xl font-semibold text-ink">{room.type}</h3>
                   <p className="mt-1 text-sm text-muted">Up to {room.maxCapacity} guest{room.maxCapacity > 1 ? 's' : ''}</p>
-                  <p className="mt-4 border-t border-line pt-3 text-sm text-muted">
+                  <p className="mb-4 mt-2 text-sm text-ink">{room.bed} · {room.size} m² · {room.view}</p>
+                  <p className="mt-auto border-t border-line pt-3 text-sm text-muted">
                     From{' '}
                     <span className="font-display text-xl font-semibold text-ink">
                       {formatCurrency(room.fromPrice)}
@@ -146,17 +141,13 @@ export default async function LandingPage() {
       {/* Why book direct */}
       <section id="why-direct" className="mt-24 scroll-mt-24 border-y border-line bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-8">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Why book direct</p>
-          <h2 className="mt-2 max-w-xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="max-w-xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             The best way to book is with us
           </h2>
           <ul className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {BENEFITS.map((item) => (
-              <li key={item.title}>
-                <span className="flex h-12 w-12 items-center justify-center border border-line bg-paper text-gold-ink rounded-md">
-                  <Icon path={item.path} className="h-6 w-6" />
-                </span>
-                <h3 className="mt-4 font-display text-xl font-semibold text-ink">{item.title}</h3>
+              <li key={item.title} className="border-t border-gold/60 pt-5">
+                <h3 className="font-display text-xl font-semibold text-ink">{item.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
               </li>
             ))}
@@ -166,8 +157,7 @@ export default async function LandingPage() {
 
       {/* Gallery + facilities */}
       <section id="facilities" className="mx-auto mt-24 max-w-6xl scroll-mt-24 px-4 sm:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Facilities</p>
-        <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Everything you need, nothing you do not
         </h2>
 
@@ -208,12 +198,16 @@ export default async function LandingPage() {
 
       {/* FAQ */}
       <section id="faq" className="mx-auto mt-24 max-w-3xl scroll-mt-24 px-4 sm:px-8">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">Good to know</p>
-        <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
           Frequently asked questions
         </h2>
         <div className="mt-8">
           <Faq />
+        </div>
+        <div className="mt-12">
+          <Link href="/#search" className="inline-flex min-h-11 items-center rounded-md bg-navy px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-navy-hover">
+            Check availability
+          </Link>
         </div>
       </section>
     </>

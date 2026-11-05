@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import RoomTypeCard from '@/components/guest/RoomTypeCard';
 import SearchForm from '@/components/guest/SearchForm';
@@ -7,6 +8,7 @@ import { addDays, formatDate, isIsoDate, nightsBetween, todayIso } from '@/lib/f
 import type { Room } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'Rooms & suites | InnVibe' };
 
 const TYPE_ORDER: Room['type'][] = ['Single', 'Double', 'Deluxe', 'Suite'];
 
@@ -73,7 +75,7 @@ export default async function RoomsPage({ searchParams }: { searchParams: Search
 
       <section className="mt-10 flex flex-col gap-6" aria-live="polite">
         {rooms === null && (
-          <StateMessage kind="error" message="Could not load rooms. Make sure the NestJS backend is running on port 4000." />
+          <StateMessage kind="error" message="Rooms are unavailable right now. Please try again in a moment." />
         )}
 
         {rooms && totalFree === 0 && (

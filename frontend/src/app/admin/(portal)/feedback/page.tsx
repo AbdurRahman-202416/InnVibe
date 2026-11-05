@@ -56,7 +56,7 @@ export default function FeedbackPage() {
       setSummary(result.summary);
       setErrorMessage('');
     } catch {
-      setErrorMessage('Could not load feedback. Make sure the NestJS backend is running on port 4000.');
+      setErrorMessage('Could not load feedback. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
       setIsSearching(false);

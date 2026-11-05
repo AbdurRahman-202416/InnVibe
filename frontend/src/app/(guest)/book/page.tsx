@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import BookingSummary from '@/components/guest/BookingSummary';
 import CheckoutForm from '@/components/guest/CheckoutForm';
@@ -6,6 +7,7 @@ import { getAvailability, getQuote } from '@/lib/api';
 import { isIsoDate } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'Confirm your stay | InnVibe' };
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -69,7 +71,7 @@ export default async function BookPage({ searchParams }: { searchParams: SearchP
   } catch {
     return (
       <div className="mx-auto max-w-3xl px-4 py-14 sm:px-8">
-        <StateMessage kind="error" message="Could not reach the API. Make sure the NestJS backend is running on port 4000." />
+        <StateMessage kind="error" message="We could not load this page right now. Please try again in a moment." />
       </div>
     );
   }

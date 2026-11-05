@@ -8,7 +8,7 @@ export default function GuestHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-8">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex min-h-11 items-center gap-3">
           <span className="relative flex h-10 w-10 items-center justify-center bg-navy font-display text-xl font-semibold text-white rounded-md">
             I
             <span className="absolute inset-x-2 bottom-1.5 h-px bg-gold" />

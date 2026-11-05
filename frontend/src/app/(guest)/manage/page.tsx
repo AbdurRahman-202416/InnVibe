@@ -7,8 +7,7 @@ export const metadata: Metadata = { title: 'My booking | InnVibe' };
 export default function ManagePage() {
   return (
     <div className="mx-auto max-w-xl px-4 py-12 sm:px-8 sm:py-16">
-      <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">My booking</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+      <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
         Find your reservation
       </h1>
       <p className="mt-3 text-base text-muted">

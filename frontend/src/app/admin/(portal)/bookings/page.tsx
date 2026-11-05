@@ -112,7 +112,7 @@ export default function BookingsPage() {
       <PageHeader
         compact
         title="Bookings"
-        subtitle="Every reservation, from the website and the front desk. Latest arrivals first."
+        subtitle="Every reservation, from the website and the front desk. Newest bookings first."
         action={
           <button
             type="button"

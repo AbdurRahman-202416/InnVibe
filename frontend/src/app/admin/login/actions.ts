@@ -30,7 +30,7 @@ export async function loginAction(_previous: LoginState | undefined, formData: F
       body: JSON.stringify({ username, password }),
     });
   } catch {
-    return { error: 'Cannot reach the hotel API. Is the backend running on port 4000?', username };
+    return { error: 'Cannot reach the server right now. Please try again in a moment.', username };
   }
 
   if (!response.ok) {

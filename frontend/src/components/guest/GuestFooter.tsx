@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const linkClasses = 'flex min-h-9 items-center text-sm text-muted transition-colors duration-200 hover:text-ink';
+const linkClasses = 'flex min-h-11 items-center text-sm text-muted transition-colors duration-200 hover:text-ink';
 
 /** Public website footer: brand blurb plus three link columns, like larger hotel sites. */
 export default function GuestFooter() {

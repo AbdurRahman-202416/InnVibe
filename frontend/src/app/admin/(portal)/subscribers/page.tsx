@@ -33,7 +33,7 @@ export default function SubscribersPage() {
       setSubscribers(await getStaffSubscribers(debouncedQuery));
       setErrorMessage('');
     } catch {
-      setErrorMessage('Could not load subscribers. Make sure the NestJS backend is running on port 4000.');
+      setErrorMessage('Could not load subscribers. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
       setIsSearching(false);

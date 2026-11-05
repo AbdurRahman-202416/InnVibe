@@ -24,7 +24,7 @@ export default async function DashboardPage() {
         <PageHeader title="Dashboard" subtitle="Overview of your hotel" />
         <StateMessage
           kind="error"
-          message="Could not reach the API. Make sure the NestJS backend is running on port 4000."
+          message="Could not reach the server. Please try again in a moment."
         />
       </>
     );

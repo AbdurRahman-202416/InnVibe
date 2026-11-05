@@ -5,3 +5,8 @@ dist
 .DS_Store
 .env*.local
 .env
+
+# Impeccable (local design context)
+PRODUCT.md
+DESIGN.md
+.impeccable/

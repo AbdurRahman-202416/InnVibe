@@ -56,14 +56,12 @@ export default function RoomTypeCard({
       <div className="flex flex-col p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">
-              Sleeps up to {capacity}
-            </p>
-            <h3 className="mt-1 font-display text-3xl font-semibold text-ink">
+            <h3 className="font-display text-3xl font-semibold text-ink">
               <Link href={detailsHref} className="underline-offset-4 hover:underline">
                 {type}
               </Link>
             </h3>
+            <p className="mt-1 text-sm text-muted">Sleeps up to {capacity}</p>
           </div>
           {!soldOut && (
             <p className="text-sm font-semibold text-success">
@@ -74,7 +72,7 @@ export default function RoomTypeCard({
 
         <p className="mt-3 text-base leading-relaxed text-muted">{description}</p>
 
-        <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink">
+        <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 pb-4 text-sm text-ink">
           {amenities.slice(0, 5).map((amenity) => (
             <li key={amenity} className="flex items-center gap-1.5">
               <Icon path="M5 13l4 4L19 7" className="h-4 w-4 text-gold-ink" />
