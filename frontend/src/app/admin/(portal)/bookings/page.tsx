@@ -82,8 +82,8 @@ export default function BookingsPage() {
         status: view === 'cancelled' ? 'cancelled' : '',
       });
       if (requestId !== latestRequest.current) return; // a newer search has started: drop this answer
-      // Latest arrival first (future stays on top, finished stays at the bottom). The API is oldest-booked-first.
-      setBookings([...rows].reverse().sort((a, b) => b.checkIn.localeCompare(a.checkIn)));
+      // The API is oldest-booked-first, so reverse it: the booking made last is on top.
+      setBookings([...rows].reverse());
       setErrorMessage('');
     } catch {
       if (requestId !== latestRequest.current) return;
