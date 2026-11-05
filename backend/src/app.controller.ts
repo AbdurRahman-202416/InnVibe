@@ -1,6 +1,6 @@
 import { Controller, Get, Header } from '@nestjs/common';
 
-/** Landing page of the API itself (GET /), so opening the backend address in a browser shows a clear message instead of "Cannot GET /". */
+/** GET / shows a short message instead of "Cannot GET /" */
 @Controller()
 export class AppController {
   @Get()

@@ -29,11 +29,7 @@ interface BookingDetailsModalProps {
   onCancelled: () => void;
 }
 
-/**
- * Everything the staff may need about one booking (contact, stay, payment, requests, price breakdown),
- * plus a second step to cancel it: the staff must give a reason, the booking is kept (marked cancelled)
- * and its room becomes available again.
- */
+/** Everything the staff may need about one booking (contact, stay, payment, requests, price breakdown), plus a second step to cancel it */
 export default function BookingDetailsModal({ booking, room, onClose, onCancelled }: BookingDetailsModalProps) {
   const [step, setStep] = useState<'details' | 'cancel'>('details');
   const [reason, setReason] = useState('');

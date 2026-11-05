@@ -37,13 +37,6 @@ const nightsLabel = (booking: Booking) => {
   return `${nights} night${nights === 1 ? '' : 's'}`;
 };
 
-/**
- * Bookings page (client component).
- *  - search box: finds a booking by confirmation code, guest name, e-mail, phone or room number
- *  - filters: where it was booked (website / front desk) and where the stay is (upcoming / in house / completed)
- *  - "View" opens everything about the booking (contact, requests, payment, price breakdown)
- * Searching happens on the server (the API does the matching), after a short pause in typing.
- */
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<RoomAvailability[]>([]);

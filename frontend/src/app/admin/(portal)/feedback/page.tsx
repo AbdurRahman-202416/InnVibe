@@ -31,10 +31,6 @@ const CATEGORY_STYLE: Record<ReviewCategory, { label: string; dot: string }> = {
   complaint: { label: 'Complaint', dot: 'bg-danger' },
 };
 
-/**
- * Guest feedback (read-only). Staff can search and filter it, and jump to the booking it belongs to,
- * but cannot edit or delete a review: there is no such route in the API.
- */
 export default function FeedbackPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [summary, setSummary] = useState<ReviewSummary | null>(null);

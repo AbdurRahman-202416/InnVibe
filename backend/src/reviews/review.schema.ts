@@ -4,11 +4,7 @@ import { HydratedDocument } from 'mongoose';
 export const REVIEW_CATEGORIES = ['praise', 'suggestion', 'complaint'] as const;
 export type ReviewCategory = (typeof REVIEW_CATEGORIES)[number];
 
-/**
- * Guest feedback in MongoDB (collection "reviews").
- * A review is never edited or deleted by anyone: there are simply no routes for it. The unique index on
- * bookingCode allows exactly one review per booking.
- */
+/** Guest feedback in MongoDB (collection "reviews") */
 @Schema({ collection: 'reviews', versionKey: false })
 export class ReviewEntity {
   @Prop({ type: String, required: true, unique: true })

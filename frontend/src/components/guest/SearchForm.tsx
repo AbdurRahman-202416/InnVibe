@@ -18,12 +18,6 @@ const GUEST_OPTIONS = [1, 2, 3, 4].map((count) => ({
   label: `${count} guest${count > 1 ? 's' : ''}`,
 }));
 
-/**
- * Availability search. It is a plain HTML GET form that goes to /rooms?checkIn=..&checkOut=..&guests=..
- * so the search lives in the URL (shareable, back-button friendly, works without extra state libraries).
- * The custom DatePicker and Select each render a hidden input, so the normal form submit still carries the values.
- * The only extra logic: keep check-out after check-in.
- */
 export default function SearchForm({ defaultCheckIn, defaultCheckOut, defaultGuests, minDate }: SearchFormProps) {
   const [checkIn, setCheckIn] = useState(defaultCheckIn);
   const [checkOut, setCheckOut] = useState(defaultCheckOut);

@@ -9,16 +9,7 @@ interface Options {
   maxHeight?: number;
 }
 
-/**
- * Where to put a popover (calendar, dropdown list) relative to its trigger button.
- *
- * The popover is rendered into document.body with position: fixed, using the numbers from here.
- * That is what stops a modal (which scrolls and clips its content) from cutting the popover off.
- *  - opens below the trigger when it fits, otherwise on the side with more room
- *  - its height is limited to the room that side has, and it scrolls inside if needed
- *  - stays inside the viewport horizontally
- *  - follows the trigger when the page, the modal body or the window scrolls or resizes
- */
+/** Where to put a popover (calendar, dropdown list) relative to its trigger button */
 export function usePopoverPosition(
   triggerRef: RefObject<HTMLElement | null>,
   isOpen: boolean,

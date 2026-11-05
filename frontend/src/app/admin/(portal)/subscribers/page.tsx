@@ -8,10 +8,6 @@ import { formatDateTime } from '@/lib/format';
 import { getStaffSubscribers } from '@/lib/staff-client';
 import type { Subscriber } from '@/lib/types';
 
-/**
- * One CSV cell. Quotes are doubled, and a leading = + - @ is neutralised so that opening the file in
- * Excel or Sheets can never run a pasted-in formula ("CSV injection").
- */
 const csvCell = (value: string) => {
   const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
   return `"${safe.replace(/"/g, '""')}"`;

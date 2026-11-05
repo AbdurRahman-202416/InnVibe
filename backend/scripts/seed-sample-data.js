@@ -1,12 +1,4 @@
-/**
- * Adds realistic sample data to the database: bookings (completed, in-house, upcoming and cancelled stays),
- * guest feedback and newsletter subscribers. Run it with:  npm run seed:sample
- *
- * Safe to run more than once: every sample booking has a fixed confirmation code and is skipped when it already
- * exists, reviews are one per booking, subscribers are matched by e-mail. Dates are relative to the day it is first run.
- * It writes straight to MongoDB (the API refuses bookings in the past), and keeps the "roomnights" collection
- * consistent: every non-cancelled booking holds its nights, so no room can be double booked afterwards.
- */
+/** Adds realistic sample data to the database */
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env'), quiet: true });
 const mongoose = require('mongoose');

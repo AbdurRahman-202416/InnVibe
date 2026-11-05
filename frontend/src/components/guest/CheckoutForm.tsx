@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useRef, useState } from 'react';
 import Modal from '@/components/Modal';
 import { createBooking } from '@/lib/api';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, MOBILE_NUMBER } from '@/lib/format';
+import FieldError from '@/components/ui/FieldError';
 import type { PaymentInput, PaymentMethod } from '@/lib/types';
 import Icon from './Icon';
 
@@ -50,17 +51,7 @@ type FieldKey =
   | 'walletPin'
   | 'agreed';
 
-const MOBILE_NUMBER = /^01[3-9]\d{8}$/; // Bangladeshi mobile: 01 + operator digit + 8 digits
 
-/**
- * Guest details + payment (card, bKash or Nagad). One POST /bookings call does everything:
- * the server checks availability again, takes the payment, calculates the price,
- * stores the booking and returns a confirmation code. We never store card numbers or wallet PINs.
- *
- * Validation: the form uses noValidate (no browser pop-ups). Every rule lives in `validate()`, which runs on each
- * render. A message is only SHOWN once the field was left (blur) or the user pressed Pay, so people are not
- * scolded while they are still typing their first character.
- */
 export default function CheckoutForm({ roomNumber, checkIn, checkOut, guests, total }: CheckoutFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -132,16 +123,10 @@ export default function CheckoutForm({ roomNumber, checkIn, checkOut, guests, to
     };
   }
 
-  /** Red message with an icon, shown under a field. Renders nothing when the field is fine. */
+  /** Error message under a field (nothing when the field is fine) */
   function fieldError(name: FieldKey) {
     const message = shown(name);
-    if (!message) return null;
-    return (
-      <p id={`checkout-${name}-error`} className="animate-modal-in flex items-start gap-1.5 text-sm text-danger">
-        <Icon path="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>{message}</span>
-      </p>
-    );
+    return message ? <FieldError id={`checkout-${name}-error`} message={message} /> : null;
   }
 
   const labelClasses = 'text-sm font-semibold text-ink';

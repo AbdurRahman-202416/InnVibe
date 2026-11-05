@@ -5,7 +5,8 @@ import { FormEvent, useEffect, useId, useState } from 'react';
 import DatePicker from '@/components/ui/DatePicker';
 import Select from '@/components/ui/Select';
 import { getQuote } from '@/lib/api';
-import { addDays, formatCurrency, nightsBetween, todayIso } from '@/lib/format';
+import { addDays, formatCurrency, MOBILE_NUMBER, nightsBetween, todayIso } from '@/lib/format';
+import FieldError from '@/components/ui/FieldError';
 import { createStaffBooking } from '@/lib/staff-client';
 import type { FrontDeskPaymentMethod, Pricing, Room } from '@/lib/types';
 
@@ -19,7 +20,6 @@ interface BookingModalProps {
   onBooked: () => void;
 }
 
-const MOBILE_NUMBER = /^01[3-9]\d{8}$/; // Bangladeshi mobile: 01 + operator digit + 8 digits
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** How the guest pays at the desk. "pay-later" records that nothing was collected yet. */
@@ -39,26 +39,6 @@ function SectionTitle({ children }: { children: string }) {
   return <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-gold-ink">{children}</h3>;
 }
 
-/** Red message with an icon, shown under a field. */
-function FieldError({ id, message }: { id: string; message: string }) {
-  return (
-    <p id={id} className="animate-modal-in flex items-start gap-1.5 text-sm text-danger">
-      <svg className="mt-0.5 h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {message}
-    </p>
-  );
-}
-
-/**
- * Front-desk "New booking" dialog.
- *
- * Layout (works on short screens): the header and the footer actions never move, and only the
- * middle part scrolls. On wide screens the body is two columns: the form on the left and a live
- * summary (room photo + price from the server) on the right. On phones it is a bottom sheet.
- * The calendar and dropdown popovers are portaled to <body>, so the scrolling body can never clip them.
- */
 export default function BookingModal({ rooms, initialRoomNumber, onClose, onBooked }: BookingModalProps) {
   const ids = useId();
   const [guestName, setGuestName] = useState('');

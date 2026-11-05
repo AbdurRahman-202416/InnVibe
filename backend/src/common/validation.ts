@@ -1,10 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-/**
- * JSON bodies can contain anything: a number, an object like {"$ne": null}, an array.
- * Before a value is used as text (trim, replace, a database query) we check it really IS text,
- * so a malformed request gets a clear 400 instead of crashing the handler (500) or reaching the database.
- */
+/** JSON bodies can contain anything */
 export function assertText(value: unknown, field: string, options: { required?: boolean; max?: number } = {}): void {
   if (value === undefined || value === null) {
     if (options.required) throw new BadRequestException(`${field} is required`);

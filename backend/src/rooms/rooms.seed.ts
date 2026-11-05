@@ -1,10 +1,6 @@
 import { Room } from './room.interface';
 
-/**
- * The room catalogue that is written to MongoDB the first time the API starts against an empty database.
- * After that, the database is the source of truth: edit rooms there (or in Atlas), not here.
- * Prices are in Bangladeshi taka (BDT) per night, before service charge and VAT.
- */
+/** The room catalogue that is written to MongoDB the first time the API starts against an empty database */
 export const ROOMS_SEED: Room[] = [
   {
     id: 1,

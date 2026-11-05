@@ -22,11 +22,7 @@ interface BookingSummaryProps {
 
 type OpenModal = 'price' | 'policy' | null;
 
-/**
- * Sticky booking summary beside the checkout form, like big travel sites:
- * photo, stay details, a one-line total, and two links that open popups
- * ("Price details" and "Cancellation policy") so the page itself stays short.
- */
+/** Sticky booking summary beside the checkout form, like big travel sites */
 export default function BookingSummary({
   type,
   roomNumber,

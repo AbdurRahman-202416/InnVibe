@@ -37,12 +37,7 @@ function Stepper() {
   );
 }
 
-/**
- * Checkout page (server component for the data, client components for the form and popups).
- * URL: /book?room=201&checkIn=...&checkOut=...&guests=2
- * We re-check availability on the server so a stale link cannot book a taken room,
- * and every number on this page comes from the API's /bookings/quote.
- */
+/** Checkout page (server component for the data, client components for the form and popups) */
 export default async function BookPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const roomNumber = first(params.room);

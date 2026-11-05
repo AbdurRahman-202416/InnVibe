@@ -14,10 +14,7 @@ export interface Room {
   amenities: string[];
 }
 
-/**
- * A room plus whether it is free for the requested dates.
- * Availability is never stored on the room: it is calculated from the bookings.
- */
+/** A room plus whether it is free for the requested dates */
 export interface RoomAvailability extends Room {
   isAvailable: boolean;
 }

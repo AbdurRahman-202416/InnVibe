@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { formatDate, todayIso } from '@/lib/format';
+import { addDays, formatDate, todayIso } from '@/lib/format';
 import { useDismiss } from './useDismiss';
 import { usePopoverPosition } from './usePopoverPosition';
 
@@ -35,17 +35,7 @@ const parseIso = (iso: string) => {
   const [year, month, day] = iso.split('-').map(Number);
   return { year, month: month - 1, day };
 };
-/** Shift an ISO date by whole days (UTC maths, so no timezone or daylight-saving surprises). */
-const shiftDays = (iso: string, days: number) =>
-  new Date(new Date(iso).getTime() + days * 86400000).toISOString().slice(0, 10);
-
-/**
- * Custom date picker instead of the browser's native one:
- *  - the calendar popover is exactly as wide as the input (never narrower than 280px so it stays readable)
- *  - keyboard: arrows move by day/week, PageUp/PageDown by month, Enter picks, Escape closes
- *  - dates outside min/max are disabled
- *  - a hidden, validating <input> keeps "required" and form submission working
- */
+/** Custom date picker instead of the browser's native one */
 export default function DatePicker({
   value,
   onChange,
@@ -107,7 +97,7 @@ export default function DatePicker({
     const steps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
     if (event.key in steps) {
       event.preventDefault();
-      moveFocus(shiftDays(focusedIso, steps[event.key]));
+      moveFocus(addDays(focusedIso, steps[event.key]));
     } else if (event.key === 'PageUp' || event.key === 'PageDown') {
       event.preventDefault();
       const { year, month, day } = parseIso(focusedIso);

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
 import { Model } from 'mongoose';
@@ -12,17 +12,14 @@ import { calculatePricing, Pricing } from './pricing';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-/** Today's date as "YYYY-MM-DD", moved by `offsetDays` (used for seed data and defaults). */
+/** Today's date as "YYYY-MM-DD", moved by `offsetDays` (used for defaults and date checks). */
 const isoDay = (offsetDays = 0) => new Date(Date.now() + offsetDays * MS_PER_DAY).toISOString().slice(0, 10);
 
 /** MongoDB duplicate-key error (a unique index refused the write). */
 const isDuplicateKey = (error: unknown): error is { code: number; keyPattern?: Record<string, unknown> } =>
   typeof error === 'object' && error !== null && (error as { code?: number }).code === 11000;
 
-/**
- * Turns a database row into the API shape: `_id` becomes a text `id`, a missing status means "confirmed".
- * The cancel reason and who cancelled are internal, so they are only included for the staff list.
- */
+/** Database row -> API shape (cancel details only for staff) */
 const toBooking = (row: BookingEntity & { _id: unknown }, forStaff = false): Booking => {
   const { _id, status, cancelledAt, cancelReason, cancelledBy, ...rest } = row;
   return {
@@ -37,19 +34,9 @@ const toBooking = (row: BookingEntity & { _id: unknown }, forStaff = false): Boo
 /** Cancelled bookings no longer hold a room. */
 const NOT_CANCELLED = { $ne: 'cancelled' as const };
 
-/**
- * BookingsService owns every booking rule. Bookings live in MongoDB (collections "bookings" and "roomnights").
- *  1. input must be complete and dates must be valid (and not in the past)
- *  2. the room must exist and fit the number of guests
- *  3. the room must be free for the WHOLE stay (date-range overlap check)
- *  4. the nights are then reserved atomically (unique index), so two simultaneous guests cannot both win
- *  5. amounts (rate x nights + service charge + VAT) are calculated here, never trusted from the client
- *  6. online bookings are "paid" through the PaymentsService, only after the nights are held
- */
+/** BookingsService owns every booking rule */
 @Injectable()
-export class BookingsService implements OnModuleInit {
-  private readonly logger = new Logger(BookingsService.name);
-
+export class BookingsService {
   constructor(
     @InjectModel(BookingEntity.name) private readonly bookingModel: Model<BookingDocument>,
     @InjectModel(RoomNightEntity.name) private readonly nightModel: Model<RoomNightDocument>,
@@ -57,28 +44,7 @@ export class BookingsService implements OnModuleInit {
     private readonly paymentsService: PaymentsService,
   ) {}
 
-  /**
-   * First start against an empty database: add three sample bookings so the staff dashboard is not empty.
-   * Dates are relative to the day of that first start.
-   */
-  async onModuleInit(): Promise<void> {
-    if ((await this.bookingModel.estimatedDocumentCount()) > 0) return;
-    await this.roomsService.ensureSeeded();
-
-    await this.seed('IV-4F8K2A', 'Ayesha Rahman', '201', 2, -1, 2, 'front-desk');
-    await this.seed('IV-9M3QX7', 'Daniel Carter', '302', 2, 0, 4, 'front-desk');
-    await this.seed('IV-2B7TY5', 'Sofia Alvarez', '101', 1, 5, 8, 'online', 'sofia@example.com');
-    this.logger.log('Seeded 3 sample bookings');
-  }
-
-  /**
-   * Bookings for the staff portal, oldest first. All filters are optional:
-   *  - q:      text that must appear in the code, guest name, e-mail, phone or room number (case-insensitive)
-   *  - source: "online" (website) or "front-desk"
-   *  - when:   "upcoming" (not arrived yet), "current" (in-house tonight) or "past" (already checked out); cancelled bookings are left out
-   *  - status: "confirmed" or "cancelled"
-   * Everything the user types is validated and regex-escaped before it reaches MongoDB.
-   */
+  /** Bookings for the staff portal, oldest first */
   async findAll(filters: { q?: unknown; source?: unknown; when?: unknown; status?: unknown } = {}): Promise<Booking[]> {
     const { q, source, when, status } = filters;
     assertText(q, 'q', { max: 100 });
@@ -135,10 +101,7 @@ export class BookingsService implements OnModuleInit {
     return toBooking(row);
   }
 
-  /**
-   * "My booking" lookup: the confirmation code AND the e-mail used at booking must both match.
-   * One shared error message, so nobody can use this to find out which codes exist.
-   */
+  /** "My booking" lookup */
   async lookup(code?: string, email?: string): Promise<Booking> {
     if (typeof code !== 'string' || typeof email !== 'string') {
       // Same answer as "no match": a malformed request must not reveal anything.
@@ -152,12 +115,7 @@ export class BookingsService implements OnModuleInit {
     return toBooking(row);
   }
 
-  /**
-   * "My booking" search with ONE box: a confirmation code, an e-mail address or a mobile number.
-   * Matches are exact (not "contains"), newest stay first, at most 10. A well-formed query that matches
-   * nothing always gets the same answer, so it cannot be used to check which codes, e-mails or numbers exist.
-   * (The reviews service still uses lookup(), which needs code AND e-mail.)
-   */
+  /** "My booking" search with ONE box */
   async search(query: unknown): Promise<Booking[]> {
     assertText(query, 'query', { required: true, max: 100 });
     const text = (query as string).trim();
@@ -183,10 +141,7 @@ export class BookingsService implements OnModuleInit {
     return rows.map((row) => toBooking(row));
   }
 
-  /**
-   * Every room, each flagged with isAvailable for the given stay.
-   * Dates are optional: with none, we answer "is it free tonight?" (used by the staff dashboard).
-   */
+  /** Every room, each flagged with isAvailable for the given stay */
   async findAvailability(checkIn?: string, checkOut?: string): Promise<RoomAvailability[]> {
     assertText(checkIn, 'checkIn', { max: 10 });
     assertText(checkOut, 'checkOut', { max: 10 });
@@ -203,11 +158,7 @@ export class BookingsService implements OnModuleInit {
     return rooms.map((room) => ({ ...room, isAvailable: !busy.has(room.roomNumber) }));
   }
 
-  /**
-   * Staff cancel a booking with a reason. The booking is KEPT (status "cancelled", with who/when/why) and its
-   * nights are released, so the room can be booked again straight away. Online payments are not refunded by
-   * this app. Only one cancel can win if two staff click at once (conditional update).
-   */
+  /** Staff cancel a booking with a reason */
   async cancel(code: unknown, reason: unknown, staffUsername: string): Promise<Booking> {
     assertText(code, 'code', { required: true, max: 20 });
     assertText(reason, 'reason', { required: true, max: 300 });
@@ -347,12 +298,7 @@ export class BookingsService implements OnModuleInit {
     }
   }
 
-  /**
-   * A room is free when no existing booking overlaps the requested stay.
-   * Two stays [a.in, a.out) and [b.in, b.out) overlap when a.in < b.out AND b.in < a.out.
-   * Check-out day is exclusive, so someone can arrive the same day another guest leaves.
-   * ISO dates ("YYYY-MM-DD") compare correctly as plain strings, so MongoDB can use $lt / $gt on them.
-   */
+  /** Free = no overlap. Check-out day is exclusive, ISO date strings compare correctly as text. */
   private async isRoomFree(roomNumber: string, checkIn: string, checkOut: string): Promise<boolean> {
     const clash = await this.bookingModel.exists({
       roomNumber,
@@ -395,47 +341,7 @@ export class BookingsService implements OnModuleInit {
     throw new Error('Could not generate a unique booking code');
   }
 
-  /** Adds one sample booking (used only for the first-start seed). Offsets are days from today. */
-  private async seed(
-    code: string,
-    guestName: string,
-    roomNumber: string,
-    guests: number,
-    startOffset: number,
-    endOffset: number,
-    source: Booking['source'],
-    guestEmail?: string,
-  ): Promise<void> {
-    const room = await this.roomsService.findByRoomNumber(roomNumber);
-    if (!room) return;
-    const checkIn = isoDay(startOffset);
-    const checkOut = isoDay(endOffset);
-    const pricing = calculatePricing(endOffset - startOffset, room.pricePerNight);
-    const bookingKey = `seed-${code}`;
-    await this.reserveNights(roomNumber, checkIn, checkOut, bookingKey);
-    await this.bookingModel.create({
-      code,
-      guestName,
-      guestEmail,
-      guests,
-      roomNumber,
-      checkIn,
-      checkOut,
-      subtotal: pricing.subtotal,
-      serviceCharge: pricing.serviceCharge,
-      vat: pricing.vat,
-      totalAmount: pricing.totalAmount,
-      source,
-      ...(source === 'online'
-        ? { paymentMethod: 'card' as const, paymentReference: 'PAY-7K2M4Q8T', paymentLast4: '4242' }
-        : {}),
-    });
-  }
-
-  /**
-   * Short random confirmation code such as "IV-7K2M9Q".
-   * The alphabet skips look-alike characters (0/O, 1/I) so a guest can read it out over the phone.
-   */
+  /** Short random confirmation code such as "IV-7K2M9Q" */
   private generateCode(): string {
     const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let suffix = '';

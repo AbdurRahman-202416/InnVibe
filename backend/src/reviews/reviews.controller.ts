@@ -2,10 +2,6 @@ import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { ReviewsService } from './reviews.service';
 
-/**
- * POST /reviews: a guest leaves feedback (public; proven with booking code + e-mail).
- * GET  /reviews: staff read the feedback (needs a token). There is deliberately no PUT or DELETE.
- */
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}

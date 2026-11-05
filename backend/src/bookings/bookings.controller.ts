@@ -6,7 +6,6 @@ import { Booking, CreateBookingInput } from './booking.interface';
 import { BookingsService } from './bookings.service';
 import { Pricing } from './pricing';
 
-/** Handles HTTP requests that start with /bookings. */
 @Controller('bookings')
 export class BookingsController {
   constructor(
@@ -14,11 +13,7 @@ export class BookingsController {
     private readonly authService: AuthService,
   ) {}
 
-  /**
-   * GET /bookings?q=&source=&when=&status= -> bookings with guest details, optionally filtered. STAFF ONLY (needs a token).
-   * q searches code, name, e-mail, phone and room; source = online | front-desk;
-   * when = upcoming | current | past; status = confirmed | cancelled.
-   */
+  /** GET /bookings (staff only, filters optional) */
   @UseGuards(AuthGuard)
   @Get()
   getAllBookings(
@@ -30,18 +25,14 @@ export class BookingsController {
     return this.bookingsService.findAll({ q, source, when, status });
   }
 
-  /** POST /bookings/IV-7K2M9Q/cancel { reason } -> cancel a booking and free the room. STAFF ONLY. */
+  /** POST /bookings/:code/cancel (staff only) */
   @UseGuards(AuthGuard)
   @Post(':code/cancel')
   cancelBooking(@Param('code') code: string, @Body() body: { reason?: unknown }, @Req() request: AuthedRequest): Promise<Booking> {
     return this.bookingsService.cancel(code, body?.reason, request.user?.username ?? 'staff');
   }
 
-  /**
-   * GET /bookings/availability?checkIn=2026-11-10&checkOut=2026-11-13
-   * -> every room with isAvailable for that stay (no dates = tonight). Public.
-   * Fixed-path routes are declared BEFORE the :code route so they are not mistaken for a code.
-   */
+  /** GET /bookings/availability?checkIn=2026-11-10&checkOut=2026-11-13 */
   @Get('availability')
   getAvailability(
     @Query('checkIn') checkIn?: string,
@@ -50,7 +41,7 @@ export class BookingsController {
     return this.bookingsService.findAvailability(checkIn, checkOut);
   }
 
-  /** GET /bookings/quote?roomNumber=201&checkIn=..&checkOut=.. -> price breakdown (rate, service charge, VAT, total). Public. */
+  /** GET /bookings/quote (price breakdown) */
   @Get('quote')
   getQuote(
     @Query('roomNumber') roomNumber: string,
@@ -60,23 +51,19 @@ export class BookingsController {
     return this.bookingsService.quote(roomNumber, checkIn, checkOut);
   }
 
-  /** GET /bookings/IV-7K2M9Q -> one booking by confirmation code (guest confirmation page). Public. */
+  /** GET /bookings/:code */
   @Get(':code')
   getBooking(@Param('code') code: string): Promise<Booking> {
     return this.bookingsService.findByCode(code);
   }
 
-  /** POST /bookings/lookup { query } -> "my booking": query is a confirmation code, e-mail or mobile number. Public. */
+  /** POST /bookings/lookup (code, e-mail or mobile) */
   @Post('lookup')
   lookup(@Body() body: { query?: unknown }): Promise<Booking[]> {
     return this.bookingsService.search(body?.query);
   }
 
-  /**
-   * POST /bookings -> create a booking.
-   *  - Guests send a `payment` object (public route, they pay online).
-   *  - Without `payment` it is a front-desk booking, which only signed-in staff may create.
-   */
+  /** POST /bookings -> create a booking */
   @Post()
   async createBooking(@Body() body: CreateBookingInput, @Headers('authorization') authorization?: string): Promise<Booking> {
     if (!body?.payment) await this.authService.requireStaff(authorization);

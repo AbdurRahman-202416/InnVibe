@@ -1,17 +1,7 @@
 import { Booking, NewBookingInput, Pricing, Room, RoomAvailability } from './types';
 
-/**
- * Base URL of the NestJS API. This is the only place that knows where the API lives: change
- * NEXT_PUBLIC_API_URL (.env.local locally, Project Settings -> Environment Variables on Vercel) and redeploy.
- * A trailing slash is removed so both "https://api.example.com" and "https://api.example.com/" work.
- */
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/+$/, '');
 
-/**
- * Tiny fetch wrapper used by every page.
- * - cache: 'no-store' so we always see fresh data (rooms change after a booking).
- * - throws a readable Error when the API replies with a non-2xx status.
- */
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     cache: 'no-store',

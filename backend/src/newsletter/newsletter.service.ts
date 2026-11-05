@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { assertText, escapeRegex } from '../common/validation';
 import { SubscriberDocument, SubscriberEntity } from './subscriber.schema';
 
-/** Keeps newsletter sign-ups in MongoDB. */
 @Injectable()
 export class NewsletterService {
   constructor(@InjectModel(SubscriberEntity.name) private readonly subscriberModel: Model<SubscriberDocument>) {}

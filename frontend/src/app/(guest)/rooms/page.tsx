@@ -12,12 +12,6 @@ const TYPE_ORDER: Room['type'][] = ['Single', 'Double', 'Deluxe', 'Suite'];
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-/**
- * Search results (server component). The search lives in the URL:
- *   /rooms?checkIn=2026-11-10&checkOut=2026-11-13&guests=2
- * We sanitise the params, ask the API which rooms are free for that stay,
- * then show ONE card per room type (with how many are left), like most hotel sites.
- */
 export default async function RoomsPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const today = todayIso();

@@ -28,12 +28,6 @@ export const metadata: Metadata = {
   description: 'InnVibe is a boutique hotel with a pool, a good breakfast and a front desk that never sleeps. Book direct for all-in prices and free cancellation.',
 };
 
-/**
- * Root layout: only <html>, fonts and global CSS.
- * The two "apps" have their own layouts:
- *  - app/(guest)/layout.tsx  -> public website (header + footer)
- *  - app/admin/layout.tsx    -> staff portal (sidebar)
- */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${playfair.variable} ${karla.variable} ${notoBengali.variable}`}>

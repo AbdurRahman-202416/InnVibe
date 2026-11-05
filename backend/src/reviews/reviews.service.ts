@@ -26,10 +26,6 @@ export interface ReviewSummary {
 const MIN_MESSAGE = 10;
 const MAX_MESSAGE = 1000;
 
-/**
- * Guest feedback. A guest proves they are a real guest with the same booking code + e-mail pair as "My booking",
- * and can leave ONE review per booking. Staff can only read reviews (no edit, no delete).
- */
 @Injectable()
 export class ReviewsService {
   constructor(
@@ -73,10 +69,6 @@ export class ReviewsService {
     return { thanks: true, guestName: booking.guestName };
   }
 
-  /**
-   * Staff: newest first, up to 500. Optional filters: q (text in the message, guest name, code or room),
-   * category, rating. The summary always covers ALL reviews, whatever the filters.
-   */
   async findAll(filters: { q?: unknown; category?: unknown; rating?: unknown } = {}): Promise<{ summary: ReviewSummary; reviews: Review[] }> {
     const { q, category, rating } = filters;
     assertText(q, 'q', { max: 100 });

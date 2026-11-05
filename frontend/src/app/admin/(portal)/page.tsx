@@ -7,11 +7,6 @@ import { getStaffBookings } from '@/lib/staff-server';
 import { formatCurrency, formatDate } from '@/lib/format';
 import type { RoomAvailability } from '@/lib/types';
 
-/**
- * Dashboard (server component).
- * Data is fetched on the server, so the browser receives ready-made HTML.
- * force-dynamic stops Next.js from caching the page at build time.
- */
 export const dynamic = 'force-dynamic';
 
 const ROOM_TYPES: RoomAvailability['type'][] = ['Single', 'Double', 'Deluxe', 'Suite'];

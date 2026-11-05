@@ -25,11 +25,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 const stayQuery = (checkIn: string, checkOut: string, guests: number) =>
   new URLSearchParams({ checkIn, checkOut, guests: String(guests) }).toString();
 
-/**
- * Room detail page: /rooms/202?checkIn=..&checkOut=..&guests=..
- * Server component. It asks the API which rooms are free for the stay, shows this room's photos and
- * facts, and tells the guest, for these exact dates, whether it can be booked and what it costs.
- */
 export default async function RoomDetailPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { roomNumber } = await params;
   const query = await searchParams;

@@ -97,11 +97,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-/**
- * Responsive navigation:
- *  - lg and up: fixed sidebar on the left
- *  - below lg:  sticky top bar with a hamburger that opens a dropdown menu
- */
 export default function Sidebar({ user }: { user: StaffUser }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

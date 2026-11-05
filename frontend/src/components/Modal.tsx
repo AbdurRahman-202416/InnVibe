@@ -14,18 +14,7 @@ interface ModalProps {
   onClose?: () => void;
 }
 
-/**
- * Small accessible modal used by the guest checkout (price details, cancellation policy, payment progress).
- *  - role="dialog" + aria-modal + aria-labelledby for screen readers
- *  - Escape key and backdrop click close it (when onClose is given)
- *  - page scroll is locked while it is open, and focus returns to the button that opened it
- *  - fixed header (title + close), scrolling body and an optional fixed footer, so long content never pushes
- *    the close button or the actions out of view
- *  - bottom sheet on phones, centred card on larger screens
- *  - rendered into document.body (a portal), so it always sits above sticky headers and
- *    sticky sidebars. Without this, a modal inside a sticky parent is trapped in that parent's stacking context.
- *    (A Modal is only ever mounted after a click, so `document` exists.)
- */
+/** Small accessible modal used by the guest checkout (price details, cancellation policy, payment progress) */
 export default function Modal({ title, children, footer, onClose, size = 'md' }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);

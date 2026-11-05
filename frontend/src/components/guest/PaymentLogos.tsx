@@ -1,12 +1,5 @@
 import Image from 'next/image';
 
-/**
- * Brand marks for the payment method buttons. Files live in public/images/payments
- * (Visa from Wikimedia Commons, bKash from logotyp.us, Nagad from nagad.com.bd, Mastercard circles redrawn).
- *
- * Sizes are responsive: small on phones (three buttons share a narrow row), standard from the `sm` breakpoint up.
- * Only the height is set in CSS (width follows the logo's own proportions), so nothing is stretched or clipped.
- */
 const LOGOS = {
   visa: { src: '/images/payments/visa.svg', width: 62, height: 20, size: 'h-3 sm:h-5' },
   mastercard: { src: '/images/payments/mastercard.svg', width: 34, height: 21, size: 'h-3.5 sm:h-5' },

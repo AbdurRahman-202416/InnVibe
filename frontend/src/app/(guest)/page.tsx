@@ -61,7 +61,6 @@ function groupByType(rooms: Room[]) {
     .filter((item): item is NonNullable<typeof item> => item !== null);
 }
 
-/** Guest landing page: hero + availability search, room types, highlights. */
 export default async function LandingPage() {
   const today = todayIso();
   const checkIn = addDays(today, 1);

@@ -62,7 +62,7 @@ src/
 | `reviews` | Unique `bookingCode`: one review per booking |
 | `subscribers` | Unique e-mail |
 
-First start on an empty database seeds rooms, the two staff accounts and 3 sample bookings. Later starts never re-seed.
+First start on an empty database seeds the rooms and the two staff accounts. Bookings are not seeded: use `npm run seed:sample` for demo data.
 
 ## API
 

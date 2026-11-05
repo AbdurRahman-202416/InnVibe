@@ -24,14 +24,6 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-/**
- * Decorative hero background: photos cross-fade automatically while each one slowly zooms in
- * (the "Ken Burns" effect, done with a CSS animation). There are no controls on purpose.
- *  - the first photo is fixed, the rest are shuffled after the page loads, so every visit differs
- *    (shuffling during render would make the server HTML and the browser HTML disagree)
- *  - aria-hidden: it is decoration, screen readers skip it
- *  - the global prefers-reduced-motion rule makes the zoom and fade effectively instant
- */
 export default function HeroSlider() {
   const [slides, setSlides] = useState(SLIDES);
   const [active, setActive] = useState(0);

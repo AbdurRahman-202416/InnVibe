@@ -1,12 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 
-/**
- * Close a popover when the user clicks outside it (and its trigger) or presses Escape.
- * Pass every element that counts as "inside": the trigger wrapper and the popover itself,
- * which lives in a portal and is therefore not a DOM child of the wrapper.
- * Escape is caught in the capture phase and stopped, so if the popover sits inside a Modal,
- * Escape closes only the popover and not the whole modal.
- */
+/** Close a popover when the user clicks outside it (and its trigger) or presses Escape */
 export function useDismiss(
   refs: RefObject<HTMLElement | null> | RefObject<HTMLElement | null>[],
   isOpen: boolean,

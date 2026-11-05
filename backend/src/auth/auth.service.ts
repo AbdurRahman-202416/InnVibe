@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'crypto';
 import { Model } from 'mongoose';
@@ -21,20 +21,8 @@ const DEFAULT_ACCOUNTS: { username: string; name: string; role: StaffUser['role'
   { username: 'frontdesk', name: 'Front Desk', role: 'receptionist', password: 'Welcome@2026' },
 ];
 
-/**
- * Staff authentication, with no external auth library so every step can be explained:
- *  - staff accounts live in MongoDB; passwords are stored as scrypt hashes with a per-user salt
- *    and compared in constant time
- *  - login returns a signed token: base64url(payload) + "." + HMAC-SHA256(payload, secret)
- *  - the token carries an expiry; verification recomputes the signature, so it cannot be forged or edited
- *  - the account must still exist in the database, so deleting a user also revokes their token
- *  - 5 wrong passwords lock that username for a minute (basic brute-force protection, kept in memory)
- *
- * A real app would add HTTPS, 2FA and a proper session/JWT library.
- */
 @Injectable()
 export class AuthService implements OnModuleInit {
-  private readonly logger = new Logger(AuthService.name);
   private readonly secret = authSecret();
   private readonly failures = new Map<string, { count: number; lockedUntil: number }>();
 
@@ -52,7 +40,6 @@ export class AuthService implements OnModuleInit {
         salt,
         hash: scryptSync(account.password, salt, 32).toString('hex'),
       });
-      this.logger.log(`Created staff account "${account.username}"`);
     }
   }
 

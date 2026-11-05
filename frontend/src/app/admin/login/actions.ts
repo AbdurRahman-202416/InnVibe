@@ -14,10 +14,6 @@ export interface LoginState {
 const safeNext = (value: string) =>
   value.startsWith('/admin') && !value.startsWith('//') && !value.startsWith('/admin/login') ? value : '/admin';
 
-/**
- * Server action behind the login form. The password goes from the form to this server code
- * and on to the API; the token that comes back is stored in an httpOnly cookie, never exposed to JavaScript.
- */
 export async function loginAction(_previous: LoginState | undefined, formData: FormData): Promise<LoginState> {
   const username = String(formData.get('username') ?? '').trim();
   const password = String(formData.get('password') ?? '');

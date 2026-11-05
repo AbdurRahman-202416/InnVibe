@@ -1,9 +1,5 @@
 import Link from 'next/link';
 
-/**
- * Global 404: any URL that matches no route (e.g. /abc or /admin/abc).
- * It sits outside the guest layout, so it is a small standalone page with its own links.
- */
 export default function GlobalNotFound() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 text-center">

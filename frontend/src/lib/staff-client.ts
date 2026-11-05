@@ -1,10 +1,5 @@
 import type { Booking, NewBookingInput, Review, ReviewSummary, Subscriber } from './types';
 
-/**
- * Browser-side calls for the staff portal. They go to our OWN Next.js server (/api/staff/*),
- * which attaches the secret token from the httpOnly cookie. If the session has expired (401)
- * we send the user to the login page.
- */
 async function staffRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`/api/staff${path}`, {
     cache: 'no-store',

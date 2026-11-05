@@ -6,9 +6,9 @@ export const FRONT_DESK_PAYMENT_METHODS = ['cash', 'pos', 'bkash', 'nagad', 'ban
 export type FrontDeskPaymentMethod = (typeof FRONT_DESK_PAYMENT_METHODS)[number];
 
 /** Whatever is stored on a booking: an online method or a front-desk one. */
-export type BookingPaymentMethod = PaymentMethod | FrontDeskPaymentMethod;
+type BookingPaymentMethod = PaymentMethod | FrontDeskPaymentMethod;
 
-/** Shape of a booking record kept in the in-memory array. */
+/** A booking as returned by the API. */
 export interface Booking {
   id: string; // MongoDB _id as text
   code: string; // guest-facing confirmation code, e.g. "IV-7K2M9Q"

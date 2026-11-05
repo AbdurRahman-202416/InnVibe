@@ -16,10 +16,6 @@ const FILTERS: { value: AvailabilityFilter; label: string }[] = [
   { value: 'booked', label: 'Occupied' },
 ];
 
-/**
- * Rooms page (client component) because it needs state:
- * the loaded rooms, the selected filter and the currently open booking modal.
- */
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<RoomAvailability[]>([]);
   const [isLoading, setIsLoading] = useState(true);

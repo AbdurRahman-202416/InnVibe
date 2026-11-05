@@ -8,11 +8,6 @@ export interface PaymentReceipt {
   method: PaymentMethod;
 }
 
-/**
- * Test payment gateway. Nothing is charged and no card or wallet data is kept.
- * It only checks that the details have a valid LENGTH (card 16 digits, CVC 3-4 digits, expiry MM/YY,
- * mobile wallet number 11 digits, PIN 5 digits). Any details of the right length are approved.
- */
 @Injectable()
 export class PaymentsService {
   charge(amount: number, payment: PaymentInput): PaymentReceipt {

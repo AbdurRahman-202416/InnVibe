@@ -16,10 +16,6 @@ function validate(text: string): string {
   return /^(IV-)?[A-Za-z0-9]{6}$/.test(value.replace(/\s/g, '')) ? '' : 'Enter a valid confirmation code.';
 }
 
-/**
- * "My booking": one box for a confirmation code, an e-mail address or a mobile number.
- * One match opens the confirmation page; several (same e-mail or number) are listed to pick from.
- */
 export default function LookupForm() {
   const router = useRouter();
   const [query, setQuery] = useState('');

@@ -37,8 +37,8 @@ Two front ends share one API:
 
    That is the only backend setting. If the string has no database name, `innvibe` is used.
 
-On the first start against an empty database the API writes the starting data once: the 20 rooms, the two staff accounts
-and 3 sample bookings. After that the database is the source of truth and data survives restarts.
+On the first start against an empty database the API writes the starting data once: the 20 rooms and the two staff accounts.
+Bookings are not seeded (`npm run seed:sample` adds demo data). After that the database is the source of truth and data survives restarts.
 Collections: `rooms`, `bookings`, `roomnights`, `staffusers`, `subscribers`.
 
 ## Run it
@@ -58,7 +58,7 @@ npm run dev
 ```
 
 The frontend reads the API address from `frontend/.env.local` (`NEXT_PUBLIC_API_URL=http://localhost:4000`, which is also the default, so locally the file is optional).
-Data lives in MongoDB. The sample bookings are only written on the very first start, so their dates are relative to that day.
+Data lives in MongoDB. Demo bookings come only from `npm run seed:sample`, with dates relative to the day you run it.
 
 ### Demo accounts (staff portal)
 

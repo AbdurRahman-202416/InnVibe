@@ -25,10 +25,7 @@ const FAQS = [
   },
 ];
 
-/**
- * FAQ list built with the native <details>/<summary> elements:
- * keyboard accessible and works without any JavaScript.
- */
+/** FAQ list built with the native <details>/<summary> elements */
 export default function Faq() {
   return (
     <div className="divide-y divide-line border-y border-line">

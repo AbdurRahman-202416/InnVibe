@@ -16,10 +16,6 @@ const MAX_MESSAGE = 1000;
 
 type FieldKey = 'code' | 'email' | 'rating' | 'category' | 'message';
 
-/**
- * Guest feedback form. A guest proves they stayed (or booked) with the same code + e-mail as "My booking".
- * Validation follows the checkout form: nothing is shown until a field was left or the form was submitted.
- */
 export default function FeedbackForm({ defaultCode = '' }: { defaultCode?: string }) {
   const [code, setCode] = useState(defaultCode.toUpperCase());
   const [email, setEmail] = useState('');

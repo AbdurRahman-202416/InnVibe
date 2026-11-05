@@ -15,11 +15,6 @@ interface RoomDatePanelProps {
   minDate: string;
 }
 
-/**
- * Date + guest form on the room detail page. A plain GET form back to this same page
- * (/rooms/202?checkIn=..&checkOut=..&guests=..), so the server re-checks availability and price
- * for the new dates. Guest choices stop at the room's capacity.
- */
 export default function RoomDatePanel({
   roomNumber,
   capacity,

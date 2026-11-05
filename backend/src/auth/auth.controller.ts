@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard, AuthedRequest } from './auth.guard';
 import { AuthService, StaffUser } from './auth.service';
 
-/** Handles /auth/*: staff login and "who am I". */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

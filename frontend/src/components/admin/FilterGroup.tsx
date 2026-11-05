@@ -11,11 +11,7 @@ interface FilterGroupProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-/**
- * "Pick one" filter for a list.
- *  - phones (below md): a labelled dropdown, so five options never need sideways scrolling
- *  - md and up: a segmented control (like tabs) where every option is visible at once
- */
+/** "Pick one" filter for a list */
 export default function FilterGroup<T extends string>({ label, options, value, onChange }: FilterGroupProps<T>) {
   const labelId = useId();
 

@@ -74,12 +74,7 @@ export const BookingSchema = SchemaFactory.createForClass(BookingEntity);
 // Speeds up the "is this room free for these dates" overlap query.
 BookingSchema.index({ roomNumber: 1, checkIn: 1, checkOut: 1 });
 
-/**
- * One document per room per NIGHT that is taken (collection "roomnights").
- * The unique index on (roomNumber, date) is what makes double-booking impossible even when two guests
- * press "Pay" at the same moment: the database itself refuses the second insert, no matter how many
- * API instances are running. (A plain "check, then save" would let both through.)
- */
+/** One document per room per NIGHT that is taken (collection "roomnights") */
 @Schema({ collection: 'roomnights', versionKey: false })
 export class RoomNightEntity {
   @Prop({ type: String, required: true })

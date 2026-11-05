@@ -5,13 +5,7 @@ import { API_URL } from './api';
 import { STAFF_COOKIE } from './staff-constants';
 import type { Booking, StaffUser } from './types';
 
-/**
- * Server-only helpers for the staff portal.
- * The staff token lives in an httpOnly cookie, so browser JavaScript can never read it
- * (an XSS bug cannot steal it). Only code running on the Next.js server reads the cookie
- * and forwards it to the NestJS API as a Bearer token.
- */
-export async function getStaffToken(): Promise<string | undefined> {
+async function getStaffToken(): Promise<string | undefined> {
   return (await cookies()).get(STAFF_COOKIE)?.value;
 }
 
@@ -44,10 +38,6 @@ export async function getStaffBookings(): Promise<Booking[]> {
   return (await response.json()) as Booking[];
 }
 
-/**
- * Same-origin proxy used by the browser: it adds the Bearer token from the cookie and returns
- * the API's status and body unchanged. Used by the /api/staff/* route handlers.
- */
 export async function proxyToApi(path: string, init?: RequestInit): Promise<NextResponse> {
   const token = await getStaffToken();
   if (!token) return NextResponse.json({ message: 'Please sign in' }, { status: 401 });

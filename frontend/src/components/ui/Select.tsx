@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { useDismiss } from './useDismiss';
 import { usePopoverPosition } from './usePopoverPosition';
 
-export interface SelectOption {
+interface SelectOption {
   value: string;
   label: string;
   /** Smaller, muted text shown after the label (e.g. a price). */
@@ -23,11 +23,7 @@ interface SelectProps {
 }
 
 
-/**
- * Custom dropdown (listbox) instead of the browser's native <select>, so it matches the site.
- * Keyboard: Arrow keys move, Home/End jump, Enter or Space picks, Escape closes.
- * The popover is exactly as wide as the trigger.
- */
+/** Custom dropdown (listbox) instead of the browser's native <select>, so it matches the site */
 export default function Select({ options, value, onChange, name, labelledBy }: SelectProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);

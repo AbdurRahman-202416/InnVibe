@@ -1,9 +1,5 @@
 import type { Booking, BookingPaymentMethod } from './types';
-/**
- * Format an amount as Bangladeshi taka, e.g. 24035 -> "৳24,035", 123456 -> "৳1,23,456".
- * "en-IN" gives the lakh/crore digit grouping that Bangladesh uses too.
- * The ৳ glyph is not in Playfair/Karla, so the Noto Sans Bengali font (layout.tsx) supplies it.
- */
+/** Format an amount as Bangladeshi taka, e.g */
 const takaNumber = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
 export const formatCurrency = (amount: number) => `৳${takaNumber.format(amount)}`;
 
@@ -33,10 +29,7 @@ export const isIsoDate = (value: unknown): value is string =>
 
 export type StayStatus = 'upcoming' | 'current' | 'past';
 
-/**
- * Where a stay is relative to today: not arrived yet, in the hotel tonight, or already checked out.
- * Same rule the API uses for its "when" filter (check-out day is exclusive).
- */
+/** Where a stay is relative to today */
 export const stayStatus = (checkIn: string, checkOut: string): StayStatus => {
   const today = todayIso();
   if (checkIn > today) return 'upcoming';
@@ -49,7 +42,7 @@ export const formatDateTime = (isoTimestamp: string) =>
   new Date(isoTimestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 
 /** Names of every payment method, online and front desk. */
-export const PAYMENT_LABELS: Record<BookingPaymentMethod, string> = {
+const PAYMENT_LABELS: Record<BookingPaymentMethod, string> = {
   card: 'Card',
   bkash: 'bKash',
   nagad: 'Nagad',
@@ -66,3 +59,6 @@ export const describePayment = (booking: Pick<Booking, 'paymentMethod' | 'paymen
   if (booking.paymentMethod) return PAYMENT_LABELS[booking.paymentMethod];
   return 'Pay at the front desk';
 };
+
+/** Bangladeshi mobile number: 01 + operator digit + 8 digits */
+export const MOBILE_NUMBER = /^01[3-9]\d{8}$/;
